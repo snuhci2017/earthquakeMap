@@ -1,6 +1,8 @@
 var descriptionBarChart = 'DESCRIPTION: This bar chart shows how the occurrence of earthquakes near Korea has changed since 1978. ' +
     'Labels on X axis means each year and them of Y axis means the number of earthquake occurrence in each year. ' +
     'From this visualization you can easily find the number of occurrences dramatically changed in 2016 with an earthquake largest in scale.';
+
+// Default configuration to set up a bar chart.
 var config_BarChart = {}
 config_BarChart['frame'] = { 'width': 800, 'height': 600 } // The size of the frame in HTML doc.
 config_BarChart['margin'] = { top: 20, right: 20, bottom: 70, left: 60 }
@@ -9,12 +11,16 @@ config_BarChart['chart'] = {
     'height': config_BarChart.frame.height - config_BarChart.margin.top - config_BarChart.margin.bottom
 }
 
+// shows yearly statistics of occurrence of earthquakes in a bar chart.
+// only Records of which occurred dates are within the specified range of time will be displayed.
 function showBarChart(records, fromYear, toYear) {
     var config = config_BarChart;
-    var intensitySum = 0;
+    var magnitudeSum = 0;
     var numOccurrence = 0;
     var statistics = new Map();
 
+    // filter records with the given range of time first
+    // and count records which occurred in each year.
     records.filter(function(record) {
         var year = record['occurred date'].year;
         return (fromYear <= year && year <= toYear);
@@ -25,7 +31,7 @@ function showBarChart(records, fromYear, toYear) {
         } else {
             statistics.set(year, 1);
         }
-        intensitySum += record.scale;
+        magnitudeSum += record.magnitude;
         numOccurrence++;
     });
 
@@ -44,7 +50,7 @@ function showBarChart(records, fromYear, toYear) {
 
     var xAxis = d3.svg.axis()
         .scale(x)
-        .orient('bottom'); //.tickFormat(d3.format('.0s'));
+        .orient('bottom');
 
     var yAxis = d3.svg.axis()
         .scale(y)
@@ -106,7 +112,7 @@ function showBarChart(records, fromYear, toYear) {
             return config.chart.height - y(d[1]);
         });
 
-    d3.select('#mean-intensity').text(d3.format('.2f')(intensitySum / numOccurrence));
+    d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / numOccurrence));
     d3.select('#num-occurrences').text(d3.format('f')(numOccurrence));
     document.getElementById('description').textContent = descriptionBarChart;
 }

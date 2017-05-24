@@ -15,7 +15,7 @@
             <td colspan="5"><b id="ui-option-instruction">Select a Data Visualization</b></td>
         </tr>
         <tr class="buttons">
-            <td colspan="5"><label class="ui-option"><input type="radio" id="original" name="ui-option" value="original" onclick="removeExistingChart(); showEpicenterMap(records, 1978, 2017); " checked>Epicenter Map</label></td>
+            <td colspan="5"><label class="ui-option"><input type="radio" id="original" name="ui-option" value="original" onclick="removeExistingChart(); showEpicenterMap(records, 1978, 2017, 3, 5, ColorRule, RadiusRule); " checked>Epicenter Map</label></td>
         </tr>
         <tr class="buttons">
             <td colspan="5"><label class="ui-option" for="old"><input type="radio" id="old" name="ui-option" value="old" onclick="removeExistingChart(); showBarChart(records, 1978, 2017)">Earthquake Yearly Occurrence Bar Chart</label></td>
@@ -23,7 +23,7 @@
     </table>
 
     <p id="description"></p>
-    <p>mean(intensity) = <span id="mean-intensity"></span>, #(occurrence) = <span id="num-occurrences"></span></p>
+    <p>mean(magnitude) = <span id="mean-magnitude"></span>, #(occurrence) = <span id="num-occurrences"></span></p>
     <div></div>
 </body>
 

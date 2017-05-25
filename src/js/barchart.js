@@ -21,10 +21,10 @@ function showBarChart(records, fromYear, toYear) {
 
     // filter records with the given range of time first
     // and count records which occurred in each year.
-    records.filter(function(record) {
+    records.filter((record) => {
         var year = record['occurred date'].year;
         return (fromYear <= year && year <= toYear);
-    }).forEach(function(record) {
+    }).forEach((record) => {
         var year = record['occurred date'].year.toString();
         if (statistics.has(year)) {
             statistics.set(year, statistics.get(year) + 1);
@@ -36,17 +36,15 @@ function showBarChart(records, fromYear, toYear) {
     });
 
     var data = [];
-    statistics.forEach(function(value, key, map) {
-        data.push([key, value]);
-    });
+    statistics.forEach((value, key, map) => data.push([key, value]));
 
-    data = data.sort(function(a, b) { return a[0] - b[0]; });
+    data = data.sort((a, b) => (a[0] - b[0]));
 
     var x = d3.scale.ordinal().rangeRoundBands([0, config.chart.width], .05);
     var y = d3.scale.linear().range([config.chart.height, 0]);
 
-    x.domain(data.map(function(d) { return d[0]; }));
-    y.domain([0, d3.max(data, function(d) { return d[1]; })]);
+    x.domain(data.map((d) => d[0]));
+    y.domain([0, d3.max(data, (d) => d[1])]);
 
     var xAxis = d3.svg.axis()
         .scale(x)
@@ -62,12 +60,11 @@ function showBarChart(records, fromYear, toYear) {
         .attr('width', config.frame.width)
         .attr('height', config.frame.height)
         .append('g')
-        .attr('transform',
-            'translate(' + config.margin.left + ',' + config.margin.top + ')');
+        .attr('transform', translate(config.margin.left, config.margin.top));
 
     svg.append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + config.chart.height + ')')
+        .attr('transform', translate(0, config.chart.height))
         .call(xAxis)
         .selectAll('text')
         .style('text-anchor', 'end')
@@ -76,7 +73,7 @@ function showBarChart(records, fromYear, toYear) {
         .attr('transform', 'rotate(-90)');
 
     svg.append('text') // text label for the x axis
-        .attr('transform', 'translate(' + (config.chart.width / 2) + ' ,' + (config.chart.height + config.margin.bottom) + ')')
+        .attr('transform', translate((config.chart.width / 2), (config.chart.height + config.margin.bottom)))
         .style('text-anchor', 'middle')
         .text('Year')
         .attr('font-size', 18);
@@ -103,14 +100,10 @@ function showBarChart(records, fromYear, toYear) {
         .enter()
         .append('rect')
         .style('fill', 'steelblue')
-        .attr('x', function(d, i) {
-            return x(d[0]);
-        })
+        .attr('x', (d) => x(d[0]))
         .attr('width', x.rangeBand())
-        .attr('y', function(d) { return y(d[1]); })
-        .attr('height', function(d) {
-            return config.chart.height - y(d[1]);
-        });
+        .attr('y', (d) => y(d[1]))
+        .attr('height', (d) => (config.chart.height - y(d[1])));
 
     d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / numOccurrence));
     d3.select('#num-occurrences').text(d3.format('f')(numOccurrence));

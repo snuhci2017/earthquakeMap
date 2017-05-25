@@ -18,11 +18,9 @@ config_EpicenterMap['latitude'] = { top: 43, bottom: 32 };
 function showEpicenterMap(records, fromYear, toYear, fromMagnitude, toMagnitude, colorRule, radiusRule) {
 
     var config = config_EpicenterMap;
-    var data = records.filter(function(rec) {
-        return (fromYear <= rec['occurred date'].year) && (rec['occurred date'].year <= toYear);
-    }).filter(function(rec) {
-        return (fromMagnitude <= rec.magnitude) && (rec.magnitude <= toMagnitude);
-    });
+    var data = records
+        .filter((rec) => (fromYear <= rec['occurred date'].year) && (rec['occurred date'].year <= toYear))
+        .filter((rec) => (fromMagnitude <= rec.magnitude) && (rec.magnitude <= toMagnitude));
 
     var svg = d3.select('div').append('svg')
         .attr('id', 'chart')
@@ -42,10 +40,10 @@ function showEpicenterMap(records, fromYear, toYear, fromMagnitude, toMagnitude,
         .data(data)
         .enter()
         .append('circle')
-        .attr('r', function(d) { return determineRadius(d.magnitude, radiusRule); })
-        .attr('cx', function(d) { return x(d.longitude.value); })
-        .attr('cy', function(d) { return y(d.latitude.value); })
-        .style('fill', function(d) { return determineColor(d.magnitude, colorRule); })
+        .attr('r', (d) => determineRadius(d.magnitude, radiusRule))
+        .attr('cx', (d) => x(d.longitude.value))
+        .attr('cy', (d) => y(d.latitude.value))
+        .style('fill', (d) => determineColor(d.magnitude, colorRule))
 
     var xAxis = d3.svg.axis()
         .scale(x)
@@ -54,11 +52,11 @@ function showEpicenterMap(records, fromYear, toYear, fromMagnitude, toMagnitude,
     svg
         .append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate(' + 0 + ', ' + config.plot.height + ')')
+        .attr('transform', translate(0, config.plot.height))
         .call(xAxis);
 
     svg.append('text') // text label for the x axis
-        .attr('transform', 'translate(' + ((config.plot.width + config.margin.left) / 2) + ', ' + (config.plot.height + config.margin.bottom) + ')')
+        .attr('transform', translate((config.plot.width + config.margin.left) / 2, (config.plot.height + config.margin.bottom)))
         .style('text-anchor', 'middle')
         .text('Longitude')
         .attr('font-size', 18);
@@ -70,7 +68,7 @@ function showEpicenterMap(records, fromYear, toYear, fromMagnitude, toMagnitude,
     svg
         .append('g')
         .attr('class', 'y axis')
-        .attr('transform', 'translate(' + config.margin.left + ', ' + 0 + ')')
+        .attr('transform', translate(config.margin.left, 0))
         .call(yAxis);
 
     svg.append('text') // text label for the y axis
@@ -98,12 +96,10 @@ function showEpicenterMap(records, fromYear, toYear, fromMagnitude, toMagnitude,
         svg
             .selectAll('circle')
             .style('opacity', 0.5)
-            .filter(function(d) {
-                return widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
-                    lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1];
-            })
+            .filter((d) => (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
+                lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
             .style('opacity', 1)
-            .each(function(d) {
+            .each((d) => {
                 n++;
                 magnitudeSum += d.magnitude;
             })

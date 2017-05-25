@@ -72,3 +72,7 @@ function parseAsSingleCoordinate(str) {
 function parseAsMagnitude(str) {
     return parseFloat(str);
 }
+
+function translate(x, y) {
+    return 'translate(' + x + ', ' + y + ')';
+}

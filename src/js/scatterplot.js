@@ -11,19 +11,15 @@ config_EpicenterMap['margin'] = { left: 50, bottom: 50 };
 config_EpicenterMap['longitude'] = { left: 122, right: 132 };
 config_EpicenterMap['latitude'] = { top: 43, bottom: 32 };
 
-// 주어진 레코드에서 진앙의 위치를 읽어 위-경도 plot에 출력한다. 
-// 발생 시각과 규모 범위를 설정하여 출력할 레코드를 선택할 수 있다.
-// 발생 시각(T) 범위 : fromYear <= T <= toYear
-// 규모(M) 범위: fromMagnitude <= M <= toMagnitude 
-function showEpicenterMap(records, fromYear, toYear, fromMagnitude, toMagnitude, colorRule, radiusRule) {
+// 주어진 레코드에서 진앙의 위치를 읽어 위-경도 plot에 dot형태로 출력한다. 
+// 규모별로 dot의 색깔과 크기를 지정하는 룰을 전달할 수 있다 (colorRule & radiusRule, respectively).
+function showEpicenterMap(records, colorRule, radiusRule) {
 
     var config = config_EpicenterMap;
-    var data = records
-        .filter((rec) => (fromYear <= rec['occurred date'].year) && (rec['occurred date'].year <= toYear))
-        .filter((rec) => (fromMagnitude <= rec.magnitude) && (rec.magnitude <= toMagnitude));
+    var data = records;
 
-    var svg = d3.select('div').append('svg')
-        .attr('id', 'chart')
+    var svg = d3.select('#epicenter-plot').append('svg')
+        // .attr('id', 'epicenter-plot')
         .attr('width', config.frame.width)
         .attr('height', config.frame.height);
 
@@ -115,7 +111,7 @@ function showEpicenterMap(records, fromYear, toYear, fromMagnitude, toMagnitude,
         .attr('class', 'brush')
         .call(brush)
 
-    document.getElementById('description').textContent = descriptionEpicenterMap;
+    //document.getElementById('description').textContent = descriptionEpicenterMap;
 }
 
 // magnitude에 따라 점의 색깔을 결정한다.

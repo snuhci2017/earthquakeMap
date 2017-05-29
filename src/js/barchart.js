@@ -4,28 +4,23 @@ var descriptionBarChart = 'DESCRIPTION: This bar chart shows how the occurrence 
 
 // Default configuration to set up a bar chart.
 var config_BarChart = {}
-config_BarChart['frame'] = { 'width': 800, 'height': 600 } // The size of the frame in HTML doc.
-config_BarChart['margin'] = { top: 20, right: 20, bottom: 70, left: 60 }
+config_BarChart['frame'] = { 'width': 400, 'height': 300 } // The size of the frame in HTML doc.
+config_BarChart['margin'] = { top: 20, right: 20, bottom: 50, left: 50 }
 config_BarChart['chart'] = {
     'width': config_BarChart.frame.width - config_BarChart.margin.left - config_BarChart.margin.right,
     'height': config_BarChart.frame.height - config_BarChart.margin.top - config_BarChart.margin.bottom
 }
 
 // shows yearly statistics of occurrence of earthquakes in a bar chart.
-// only Records of which occurred dates are within the specified range of time will be displayed.
-function showBarChart(records, fromYear, toYear) {
+function showBarChart(records) {
     var config = config_BarChart;
     var magnitudeSum = 0;
     var numOccurrence = 0;
     var statistics = new Map();
 
-    // filter records with the given range of time first
-    // and count records which occurred in each year.
-    records.filter((record) => {
-        var year = record['occurred date'].year;
-        return (fromYear <= year && year <= toYear);
-    }).forEach((record) => {
-        var year = record['occurred date'].year.toString();
+    // count records which occurred in each year.
+    records.forEach((record) => {
+        var year = record.occurred_date.year.toString();
         if (statistics.has(year)) {
             statistics.set(year, statistics.get(year) + 1);
         } else {
@@ -55,8 +50,8 @@ function showBarChart(records, fromYear, toYear) {
         .orient('left')
         .ticks(10);
 
-    var svg = d3.select('div').append('svg')
-        .attr('id', 'chart')
+    var svg = d3.select('#yearly-statistics').append('svg')
+        // .attr('id', 'yearly-statistics')
         .attr('width', config.frame.width)
         .attr('height', config.frame.height)
         .append('g')
@@ -76,7 +71,7 @@ function showBarChart(records, fromYear, toYear) {
         .attr('transform', translate((config.chart.width / 2), (config.chart.height + config.margin.bottom)))
         .style('text-anchor', 'middle')
         .text('Year')
-        .attr('font-size', 18);
+        .attr('font-size', 14);
 
     svg.append('g')
         .attr('class', 'y axis')
@@ -92,7 +87,7 @@ function showBarChart(records, fromYear, toYear) {
         .attr('dy', '1em')
         .style('text-anchor', 'middle')
         .text('#(Occurrence)')
-        .attr('font-size', 18);
+        .attr('font-size', 14);
 
     svg
         .selectAll('rect')
@@ -107,5 +102,5 @@ function showBarChart(records, fromYear, toYear) {
 
     d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / numOccurrence));
     d3.select('#num-occurrences').text(d3.format('f')(numOccurrence));
-    document.getElementById('description').textContent = descriptionBarChart;
+    //document.getElementById('description').textContent = descriptionBarChart;
 }

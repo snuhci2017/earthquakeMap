@@ -1,5 +1,6 @@
 var recordFilePath = '../../data/earthquake-data.csv';
 var records = [];
+
 readRecordsFromFile(recordFilePath);
 
 // record를 주어진 csv 파일에서 읽어서 파싱한다.
@@ -7,7 +8,7 @@ function readRecordsFromFile(csvFile) {
     d3.csv(csvFile, function(rawdata) {
         rawdata.forEach(function(record) {
             record['magnitude'] = parseAsMagnitude(record['magnitude']);
-            record['occurred date'] = parseAsDate(record['occurred date']);
+            record['occurred_date'] = parseAsDate(record['occurred_date']);
             record['longitude'] = parseAsSingleCoordinate(record['longitude']);
             record['latitude'] = parseAsSingleCoordinate(record['latitude']);
             records.push(record);
@@ -38,8 +39,8 @@ var RadiusRule = {
 };
 
 
-function removeExistingChart() {
-    var elem = document.getElementById('chart');
+function removeExistingChart(chartId) {
+    var elem = document.getElementById(chartId);
     if (elem != null)
         elem.parentNode.removeChild(elem);
 
@@ -75,4 +76,12 @@ function parseAsMagnitude(str) {
 
 function translate(x, y) {
     return 'translate(' + x + ', ' + y + ')';
+}
+
+function filterRecords(filtered, records, fromYear, toYear, minMagnitude, maxMagnitude) {
+    records.filter((rec) => (fromYear <= rec.occurred_date.year) && (rec.occurred_date.year <= toYear))
+        .filter((rec) => (minMagnitude <= rec.magnitude && rec.magnitude <= maxMagnitude))
+        .forEach((rec) => {
+            filtered.push(rec);
+        });
 }

@@ -2,7 +2,9 @@
 <html>
 
 <head>
+    <title>Earthquake Data Analysis Tool</title>
     <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="../../lib/d3.v3.min.js" charset="utf-8"></script>
     <script src="../js/common.js" charset="utf-8"></script>
     <script src="../js/scatterplot.js" charset="utf-8"></script>
@@ -10,21 +12,30 @@
 </head>
 
 <body>
-    <table width="100%" border="0">
-        <tr class="buttons">
-            <td colspan="5"><b id="ui-option-instruction">Select a Data Visualization</b></td>
-        </tr>
-        <tr class="buttons">
-            <td colspan="5"><label class="ui-option"><input type="radio" id="original" name="ui-option" value="original" onclick="removeExistingChart(); showEpicenterMap(records, 1978, 2017, 3, 5, ColorRule, RadiusRule); " checked>Epicenter Map</label></td>
-        </tr>
-        <tr class="buttons">
-            <td colspan="5"><label class="ui-option" for="old"><input type="radio" id="old" name="ui-option" value="old" onclick="removeExistingChart(); showBarChart(records, 1978, 2017)">Earthquake Yearly Occurrence Bar Chart</label></td>
-        </tr>
-    </table>
+    <div>
+        <nav>
+            <p>Add range selection bars for period and magnitude.</p>
+            <p>mean(magnitude) = <span id=" mean-magnitude "></span>, #(occurrence) = <span id="num-occurrences "></span></p>
+        </nav>
+        <section style="width: 100%">
+            <div id="epicenter-plot"></div>
+            <div id="yearly-statistics"></div>
+        </section>
+        <aside>
 
-    <p id="description"></p>
-    <p>mean(magnitude) = <span id="mean-magnitude"></span>, #(occurrence) = <span id="num-occurrences"></span></p>
-    <div></div>
+        </aside>
+
+    </div>
+    <script>
+        $(document).ready(function() {
+            console.log(records.length);
+            var filtered = [];
+            filterRecords(filtered, records, 2010, 2016, 2.0, 3.5);
+            console.log(filtered.length);
+            showEpicenterMap(filtered, ColorRule, RadiusRule);
+            showBarChart(filtered);
+        });
+    </script>
 </body>
 
 </html>

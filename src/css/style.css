@@ -1,0 +1,46 @@
+body {
+    width: 100%;
+    font-family: helvetica;
+}
+
+nav {
+    width: 950px;
+    height: 100px;
+    border-style: solid;
+    border-width: 1px 1px 1px 1px;
+    border-color: chocolate;
+}
+
+#epicenter-plot {
+    width: 550px;
+    height: 740px;
+    float: left;
+    border-style: solid;
+    border-width: 0px 1px 0px 0px;
+    border-color: crimson;
+}
+
+#yearly-statistics {
+    width: 400px;
+    height: 300px;
+    float: left;
+}
+
+svg {
+    font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.dot {
+    stroke: #000;
+}
+
+.brush rect {
+    opacity: 0.2;
+}

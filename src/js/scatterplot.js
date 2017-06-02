@@ -11,18 +11,18 @@ emConfig['margin'] = { left: 50, bottom: 50 };
 emConfig['longitude'] = { left: 122, right: 132 };
 emConfig['latitude'] = { top: 43, bottom: 32 };
 
-// 주어진 레코드에서 진앙의 위치를 읽어 위-경도 plot에 dot형태로 출력한다. 
+// 위-경도 plot을 초기화 한다.
 // 규모별로 dot의 색깔과 크기를 지정하는 룰을 전달할 수 있다 (colorRule & radiusRule, respectively).
 function setupEpicenterMap(colorRule, radiusRule) {
     emConfig.svg = d3.select('#epicenter-plot').append('svg')
         .attr('width', emConfig.frame.width)
         .attr('height', emConfig.frame.height);
 
-    emConfig.x = d3.scale.linear()
-        .domain([emConfig.longitude.left, emConfig.longitude.right]) // longitude
+    emConfig.x = d3.scale.linear() // X 축 초기화 => 경도
+        .domain([emConfig.longitude.left, emConfig.longitude.right])
         .range([emConfig.margin.left, emConfig.plot.width + emConfig.margin.left]);
 
-    emConfig.y = d3.scale.linear()
+    emConfig.y = d3.scale.linear() // Y 축 초기화 => 위도
         .domain([emConfig.latitude.bottom, emConfig.latitude.top])
         .range([emConfig.plot.height, 0]);
 
@@ -39,7 +39,7 @@ function setupEpicenterMap(colorRule, radiusRule) {
         .attr('transform', translate(0, emConfig.plot.height))
         .call(emConfig.axis_x);
 
-    emConfig.svg.append('text') // text label for the x axis
+    emConfig.svg.append('text') // X 축 레이블 테스트 추가
         .attr('transform', translate((emConfig.plot.width + emConfig.margin.left) / 2, (emConfig.plot.height + emConfig.margin.bottom)))
         .style('text-anchor', 'middle')
         .text('Longitude')
@@ -55,7 +55,7 @@ function setupEpicenterMap(colorRule, radiusRule) {
         .attr('transform', translate(emConfig.margin.left, 0))
         .call(emConfig.axis_y);
 
-    emConfig.svg.append('text') // text label for the y axis
+    emConfig.svg.append('text') // Y 축 레이블 테스트 추가
         .attr('transform', 'rotate(-90)')
         .attr('y', 0)
         .attr('x', 0 - (emConfig.plot.height / 2))
@@ -94,7 +94,7 @@ function setupEpicenterMap(colorRule, radiusRule) {
         }
     }
 
-    // temporarily disable the brush
+    // TODO: 브러쉬는 일시적으로 비활성화 (개선 필요)
     // emConfig.svg
     //     .append('g')
     //     .attr('class', 'brush')
@@ -102,6 +102,7 @@ function setupEpicenterMap(colorRule, radiusRule) {
 
 }
 
+// 주어진 레코드를 위-경도 plot에 점으로 출력한다. 점의 킉와 색상은 초기화 시 설정한 룰들을 이용한다.
 function updateEpicenterMap(records) {
     var circles = emConfig.svg
         .selectAll('circle')

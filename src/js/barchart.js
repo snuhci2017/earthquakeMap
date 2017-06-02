@@ -11,15 +11,22 @@ config['chart'] = {
     'height': config.frame.height - config.margin.top - config.margin.bottom
 }
 
-function getStatistics(records) {
+// compute statistics (# of occurrences per year) from the given records.
+function getStatistics(records, fromYear, toYear) {
     var statistics = new Map();
+    if (fromYear > toYear) {
+        return [];
+    } else {
+        for (var year = fromYear; year <= toYear; year++) {
+            if (!statistics.has(year)) {
+                statistics.set(year.toString(), 0);
+            }
+        }
+    }
+
     records.forEach((record) => {
         var year = record.occurred_date.year.toString();
-        if (statistics.has(year)) {
-            statistics.set(year, statistics.get(year) + 1);
-        } else {
-            statistics.set(year, 1);
-        }
+        statistics.set(year, statistics.get(year) + 1);
     });
 
     var data = [];
@@ -28,13 +35,11 @@ function getStatistics(records) {
 }
 
 // shows yearly statistics of occurrence of earthquakes in a bar chart.
-function setupBarChart(records) {
+function setupBarChart() {
     config.x = d3.scale.ordinal().rangeRoundBands([0, config.chart.width], .05);
     config.y = d3.scale.linear().range([config.chart.height, 0]);
-    config.x.domain([0, 0]);
+    config.x.domain([]);
     config.y.domain([0, 0]);
-    //config.x.domain(data.map((d) => d[0]));
-    //config.y.domain([0, d3.max(data, (d) => d[1])]);
     config.axis_x = d3.svg.axis().scale(config.x).orient('bottom');
     config.axis_y = d3.svg.axis().scale(config.y).orient('left').ticks(10);
 
@@ -44,7 +49,7 @@ function setupBarChart(records) {
         .append('g')
         .attr('transform', translate(config.margin.left, config.margin.top));
 
-    config.svg.append('g')
+    config.svg.append('g') // config the X axis 
         .attr('class', 'x axis')
         .attr('transform', translate(0, config.chart.height))
         .call(config.axis_x)
@@ -54,20 +59,20 @@ function setupBarChart(records) {
         .attr('dy', '-.55em')
         .attr('transform', 'rotate(-90)');
 
-    config.svg.append('text') // text label for the x axis
+    config.svg.append('text') // text label for the X axis
         .attr('transform', translate((config.chart.width / 2), (config.chart.height + config.margin.bottom)))
         .style('text-anchor', 'middle')
         .text('Year')
         .attr('font-size', 14);
 
-    config.svg.append('g')
+    config.svg.append('g') // config the Y axis
         .attr('class', 'y axis')
         .call(config.axis_y)
         .append('text')
         .attr('transform', 'rotate(-90)')
         .attr('dy', '.71em');
 
-    config.svg.append('text') // text label for the y axis
+    config.svg.append('text') // text label for the Y axis
         .attr('transform', 'rotate(-90)')
         .attr('y', 0 - config.margin.left)
         .attr('x', 0 - (config.chart.height / 2))
@@ -75,30 +80,19 @@ function setupBarChart(records) {
         .style('text-anchor', 'middle')
         .text('#(Occurrence)')
         .attr('font-size', 14);
-
-    // config.svg.selectAll("rect")
-    //     .data(data)
-    //     .enter()
-    //     .append('rect')
-    //     .style('fill', 'steelblue')
-    //     .attr('x', (d) => config.x(d[0]))
-    //     .attr('width', config.x.rangeBand())
-    //     .attr('y', (d) => config.y(d[1]))
-    //     .attr('height', (d) => (config.chart.height - config.y(d[1])));
-    updateBarChart(records);
 }
 
-// create function to update the bars.
-function updateBarChart(records) {
-    var data = getStatistics(records);
-    console.log("data" + data);
-    // update the domain of the y-axis map to reflect change in frequencies.
+// update the bars according to the given records.
+function updateBarChart(records, fromYear, toYear) {
+    var data = getStatistics(records, fromYear, toYear);
+
+    // update the domain of the X and Y axis to reflect change in statistics.
     config.x.domain(data.map((d) => d[0]));
     config.y.domain([0, d3.max(data, (d) => d[1])]);
 
     var bars = config.svg.selectAll("rect").data(data, (d) => d[0]);
 
-    config.svg.select(".x.axis") // change the x axis
+    config.svg.select(".x.axis") // update the X axis
         .transition().duration(200).ease("sin-in-out")
         .call(config.axis_x)
         .selectAll('text')
@@ -107,13 +101,14 @@ function updateBarChart(records) {
         .attr('dy', '-.55em')
         .attr('transform', 'rotate(-90)');
 
-    config.svg.select(".y.axis") // change the y axis
+    config.svg.select(".y.axis") // update the Y axis
         .transition().duration(200).ease("sin-in-out")
         .call(config.axis_y);
 
     // update bars in the chart.
     bars.exit().remove();
 
+    //
     bars.transition().duration(200)
         .attr('x', (d) => config.x(d[0]))
         .attr('width', config.x.rangeBand())
@@ -126,10 +121,14 @@ function updateBarChart(records) {
         .attr('x', (d) => config.x(d[0]))
         .attr('width', config.x.rangeBand())
         .style('opacity', 0)
-        .on('mouseover', function() {
-            d3.select(this).style("fill", "red");
+        .on('mouseover', function(d, i) {
+            console.log(d[0] + ", " + d[1]);
+            d3.select(this)
+                .style("fill", "blue")
+                .append("svg:title")
+                .text((d) => (d[0] + ", " + d[1]));
         })
-        .on("mouseout", function(d, i) {
+        .on("mouseout", function() {
             d3.select(this).style("fill", "steelblue");
         })
         .transition().duration(200)

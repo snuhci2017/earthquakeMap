@@ -15,11 +15,23 @@
     <div>
         <nav>
             <p>Add range selection bars for period and magnitude.</p>
-            <p>mean(magnitude) = <span id=" mean-magnitude "></span>, #(occurrence) = <span id="num-occurrences "></span></p>
+
         </nav>
         <section style="width: 100%">
-            <div id="epicenter-plot"></div>
-            <div id="yearly-statistics"></div>
+            <table id="main-interface">
+                <tr>
+                    <td id="epicenter-plot"></td>
+                    <td id="yearly-statistics"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <button onclick="update()">Update Charts</button>
+                    </td>
+                    <td>
+                        <p>mean(magnitude) = <span id="mean-magnitude"></span>, #(occurrence) = <span id="num-occurrences"></span></p>
+                    </td>
+                </tr>
+            </table>
         </section>
         <aside>
 
@@ -27,14 +39,21 @@
 
     </div>
     <script>
+        var year = 2000;
+
         $(document).ready(function() {
-            console.log(records.length);
-            var filtered = [];
-            filterRecords(filtered, records, 2010, 2016, 2.0, 3.5);
-            console.log(filtered.length);
+            var filtered = filterRecords(records, year, year + 5, 0, 4.5);
             showEpicenterMap(filtered, ColorRule, RadiusRule);
-            showBarChart(filtered);
+            setupBarChart(filtered);
+            year++;
         });
+
+        function update() {
+            filtered = filterRecords(records, year, year + 5, 0, 4.5);
+            updateBarChart(filtered);
+            if (year + 5 < 2017)
+                year++;
+        }
     </script>
 </body>
 

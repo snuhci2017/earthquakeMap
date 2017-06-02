@@ -103,6 +103,8 @@ function showEpicenterMap(records, colorRule, radiusRule) {
         if (n > 0) {
             d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / n));
             d3.select('#num-occurrences').text(d3.format('f')(n));
+            console.log("mean-magnitude: " + (magnitudeSum / n));
+            console.log("num-occurance: " + (n));
         }
     }
 

@@ -9,21 +9,29 @@ nav {
     border-style: solid;
     border-width: 1px 1px 1px 1px;
     border-color: chocolate;
+    margin-bottom: 10px;
+}
+
+tr,
+td {
+    border-style: solid;
+    border-width: 1px 1px 1px 1px;
+    border-color: crimson;
 }
 
 #epicenter-plot {
     width: 550px;
     height: 740px;
     float: left;
-    border-style: solid;
+    /*border-style: solid;
     border-width: 0px 1px 0px 0px;
-    border-color: crimson;
+    border-color: crimson;*/
 }
 
 #yearly-statistics {
     width: 400px;
     height: 300px;
-    float: left;
+    /*float: left;*/
 }
 
 svg {

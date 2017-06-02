@@ -43,14 +43,17 @@
 
         $(document).ready(function() {
             var filtered = filterRecords(records, year, year + 5, 5.0, 7.0);
-            showEpicenterMap(filtered, ColorRule, RadiusRule);
+            console.log(filtered);
+            setupEpicenterMap(ColorRule, RadiusRule);
             setupBarChart();
+            updateEpicenterMap(filtered);
             updateBarChart(filtered, year, year + 5);
             year++;
         });
 
         function update() {
-            filtered = filterRecords(records, year, year + 5, 5.0, 7.0);
+            filtered = filterRecords(records, year, year + 5, 1.0, 7.0);
+            updateEpicenterMap(filtered);
             updateBarChart(filtered, year, year + 5);
             if (year + 5 < 2017)
                 year++;

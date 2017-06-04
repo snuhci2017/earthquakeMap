@@ -78,10 +78,7 @@ function translate(x, y) {
     return 'translate(' + x + ', ' + y + ')';
 }
 
-function filterRecords(filtered, records, fromYear, toYear, minMagnitude, maxMagnitude) {
-    records.filter((rec) => (fromYear <= rec.occurred_date.year) && (rec.occurred_date.year <= toYear))
-        .filter((rec) => (minMagnitude <= rec.magnitude && rec.magnitude <= maxMagnitude))
-        .forEach((rec) => {
-            filtered.push(rec);
-        });
+function filterRecords(records, fromYear, toYear, minMagnitude, maxMagnitude) {
+    return records.filter((rec) => (fromYear <= rec.occurred_date.year) && (rec.occurred_date.year <= toYear))
+        .filter((rec) => (minMagnitude <= rec.magnitude && rec.magnitude <= maxMagnitude));
 }

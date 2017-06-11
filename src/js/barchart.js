@@ -3,13 +3,13 @@ var descriptionBarChart = 'DESCRIPTION: This bar chart shows how the occurrence 
     'From this visualization you can easily find the number of occurrences dramatically changed in 2016 with an earthquake largest in scale.';
 
 // Default configuration to set up a bar chart.
-var bcConfig = {}
-bcConfig['frame'] = { 'width': 400, 'height': 300 } // The size of the frame in HTML doc.
-bcConfig['margin'] = { top: 20, right: 20, bottom: 50, left: 50 }
+var bcConfig = {};
+bcConfig['frame'] = { 'width': 400, 'height': 300 }; // The size of the frame in HTML doc.
+bcConfig['margin'] = { top: 20, right: 20, bottom: 50, left: 50 };
 bcConfig['chart'] = {
     'width': bcConfig.frame.width - bcConfig.margin.left - bcConfig.margin.right,
     'height': bcConfig.frame.height - bcConfig.margin.top - bcConfig.margin.bottom
-}
+};
 
 // compute statistics (# of occurrences per year) from the given records.
 function getStatistics(records, fromYear, toYear) {
@@ -86,6 +86,13 @@ function setupBarChart() {
 function updateBarChart(records, fromYear, toYear) {
     var data = getStatistics(records, fromYear, toYear);
 
+    var tooltip = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .text("a simple tooltip");
+
     // update the domain of the X and Y axis to reflect change in statistics.
     bcConfig.x.domain(data.map((d) => d[0]));
     bcConfig.y.domain([0, d3.max(data, (d) => d[1])]);
@@ -123,13 +130,17 @@ function updateBarChart(records, fromYear, toYear) {
         .style('opacity', 0)
         .on('mouseover', function(d, i) {
             console.log(d[0] + ", " + d[1]);
+            tooltip.style("visibility", "visible");
             d3.select(this)
-                .style("fill", "blue")
-                .append("svg:title")
-                .text((d) => (d[0] + ", " + d[1]));
+                .style("fill", "blue");
+        })
+        .on("mousemove", function(d) {
+            tooltip.text(d[0] + ", " + d[1]);
+            tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
         })
         .on("mouseout", function() {
             d3.select(this).style("fill", "steelblue");
+            tooltip.style("visibility", "hidden");
         })
         .transition().duration(200)
         .attr('y', (d) => bcConfig.y(d[1]))

@@ -81,12 +81,12 @@ function setupEpicenterMap(colorRule, radiusRule) {
             .selectAll('circle')
             .style('opacity', 0.5)
             .filter((d) => (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
-                lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
+            lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
             .style('opacity', 1)
             .each((d) => {
                 n++;
                 magnitudeSum += d.magnitude;
-            })
+            });
 
         if (n > 0) {
             d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / n));
@@ -106,7 +106,14 @@ function setupEpicenterMap(colorRule, radiusRule) {
 function updateEpicenterMap(records) {
     var circles = emConfig.svg
         .selectAll('circle')
-        .data(records, function(d, i) { return i; });
+        .data(records, (d, i) => i);
+
+    var tooltip = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .text("a simple tooltip");
 
     circles.exit().transition().duration(200).remove();
 
@@ -122,21 +129,29 @@ function updateEpicenterMap(records) {
         .attr('cx', (d) => emConfig.x(d.longitude.value))
         .attr('cy', (d) => emConfig.y(d.latitude.value))
         .style('fill', (d) => determineColor(d.magnitude, emConfig.colorRule))
-        .on('mouseover', function(d, i) {
+        .on('mouseover', function() {
+            tooltip.style("visibility", "visible");
+        })
+        .on("mousemove", function(d) {
             var date = d.occurred_date.year.toString() +
                 "." + d.occurred_date.month.toString() +
                 "." + d.occurred_date.day.toString() +
                 " " + d.occurred_date.hour.toString() +
                 ":" + d.occurred_date.minute.toString();
-            d3.select(this)
-                .append("svg:title")
-                .text((d) => ("시간: " + date + "\n" +
-                    "위치: " + d.latitude.value + d.latitude.direction + ", " + d.longitude.value + d.longitude.direction +
-                    "\n규모: " + d.magnitude));
+
+            tooltip.text("시간: " + date + "\n" +
+                "위치: " + d.latitude.value + d.latitude.direction + ", " +
+                d.longitude.value + d.longitude.direction + "\n규모: " + d.magnitude);
+            tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+        })
+        .on("mouseout", function() {
+            tooltip.style("visibility", "hidden");
         });
 }
 
-// magnitude에 따라 점의 색깔을 결정한다.
+
+
+// magnitude 에 따라 점의 색깔을 결정한다.
 function determineColor(magnitude, colorRule) {
     var color = colorRule.default;
 
@@ -150,7 +165,7 @@ function determineColor(magnitude, colorRule) {
     return color;
 }
 
-// magnitude에 따라 점의 크기를 결정한다.
+// magnitude 에 따라 점의 크기를 결정한다.
 function determineRadius(magnitude, radiusRule) {
     var radius = radiusRule.default;
 

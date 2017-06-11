@@ -1,23 +1,22 @@
-var recordFilePath = '../../data/earthquake-data.csv';
-var records = [];
+// record 를 주어진 파일에서 읽어서 파싱한다.
+function readRecordsFromFile(data) {
+    var records = [];
 
-readRecordsFromFile(recordFilePath);
-
-// record를 주어진 csv 파일에서 읽어서 파싱한다.
-function readRecordsFromFile(csvFile) {
-    d3.csv(csvFile, function(rawdata) {
-        rawdata.forEach(function(record) {
-            record['magnitude'] = parseAsMagnitude(record['magnitude']);
-            record['occurred_date'] = parseAsDate(record['occurred_date']);
-            record['longitude'] = parseAsSingleCoordinate(record['longitude']);
-            record['latitude'] = parseAsSingleCoordinate(record['latitude']);
-            records.push(record);
-        });
+    data.forEach(function(record) {
+        var new_record = {};
+        new_record['magnitude'] = parseAsMagnitude(record['magnitude']);
+        new_record['occurred_date'] = parseAsDate(record['occurred_date']);
+        new_record['longitude'] = parseAsSingleCoordinate(record['longitude']);
+        new_record['latitude'] = parseAsSingleCoordinate(record['latitude']);
+        if (!isNaN(new_record.longitude.value))
+            records.push(new_record);
     });
+
+    return records;
 }
 
-// ColorRule은 지진의 규모 범위에 대한 색상을 지정하는 룰이다. 
-// default와 rules 항목은 필수이며 default 값은 rule의 범위 밖의 지진 레코드에 대해 부여된다.
+// ColorRule 은 지진의 규모 범위에 대한 색상을 지정하는 룰이다.
+// default 와 rules 항목은 필수이며 default 값은 rule 의 범위 밖의 지진 레코드에 대해 부여된다.
 // 하나의 룰은 지진의 규모가 다음 범위인 경우에 매치된다 (from <= M < to)
 var ColorRule = {
     'default': '#ff9900',
@@ -27,8 +26,8 @@ var ColorRule = {
     ]
 };
 
-// ColorRule은 지진의 규모 범위에 대한 크기를 지정하는 룰이다. 
-// default와 rules 항목은 필수이며 default 값은 rule의 범위 밖의 지진 레코드에 대해 부여된다.
+// ColorRule 은 지진의 규모 범위에 대한 크기를 지정하는 룰이다.
+// default 와 rules 항목은 필수이며 default 값은 rule 의 범위 밖의 지진 레코드에 대해 부여된다.
 // 하나의 룰은 지진의 규모가 다음 범위인 경우에 매치된다 (from <= M < to)
 var RadiusRule = {
     'default': 5.5,
@@ -54,11 +53,13 @@ function parseAsDate(str) {
     var ymd = substr[0].split('-');
     var time = substr[1].split(':');
     var date = {};
+
     date['year'] = parseInt(ymd[0]);
     date['month'] = parseInt(ymd[1]);
     date['day'] = parseInt(ymd[2]);
     date['hour'] = parseInt(time[0]);
     date['minute'] = parseInt(time[1]);
+
     return date;
 }
 
@@ -78,6 +79,7 @@ function translate(x, y) {
     return 'translate(' + x + ', ' + y + ')';
 }
 
+// 주어진 범위에 맞게 filtering 한다
 function filterRecords(records, fromYear, toYear, minMagnitude, maxMagnitude) {
     return records.filter((rec) => (fromYear <= rec.occurred_date.year) && (rec.occurred_date.year <= toYear))
         .filter((rec) => (minMagnitude <= rec.magnitude && rec.magnitude <= maxMagnitude));

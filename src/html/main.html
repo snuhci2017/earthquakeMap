@@ -39,7 +39,7 @@
 
     </div>
     <script>
-        var year = 2000;
+        var year = 1978;
 
         $(document).ready(function() {
             var filtered = filterRecords(records, year, year + 5, 5.0, 7.0);
@@ -52,9 +52,9 @@
         });
 
         function update() {
-            filtered = filterRecords(records, year, year + 5, 1.0, 7.0);
+            filtered = filterRecords(records, year, year + 40, 1.0, 7.0);
             updateEpicenterMap(filtered);
-            updateBarChart(filtered, year, year + 5);
+            updateBarChart(filtered, year, year + 40);
             if (year + 5 < 2017)
                 year++;
         }

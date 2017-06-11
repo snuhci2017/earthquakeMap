@@ -5,11 +5,11 @@ var descriptionEpicenterMap = 'DESCRIPTION: This map shows epicenters of earthqu
     'Additionally, you can see the statistics of earthquakes which have occurred in a region by using brush.';
 
 var emConfig = {};
-emConfig['frame'] = { 'width': 550, 'height': 750 }; // The size of the frame in HTML doc.
-emConfig['plot'] = { 'width': 439, 'height': 638 };
+emConfig['frame'] = { 'width': 605, 'height': 850 }; // The size of the frame in HTML doc.
+emConfig['plot'] = { 'width': 555, 'height': 800 };
 emConfig['margin'] = { left: 50, bottom: 50 };
-emConfig['longitude'] = { left: 122, right: 132 };
-emConfig['latitude'] = { top: 43, bottom: 32 };
+emConfig['longitude'] = { left: 122, right: 131 };
+emConfig['latitude'] = { top: 43, bottom: 32.8 };
 
 // 위-경도 plot을 초기화 한다.
 // 규모별로 dot의 색깔과 크기를 지정하는 룰을 전달할 수 있다 (colorRule & radiusRule, respectively).
@@ -81,7 +81,7 @@ function setupEpicenterMap(colorRule, radiusRule) {
             .selectAll('circle')
             .style('opacity', 0.5)
             .filter((d) => (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
-            lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
+                lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
             .style('opacity', 1)
             .each((d) => {
                 n++;
@@ -142,7 +142,7 @@ function updateEpicenterMap(records) {
             tooltip.text("시간: " + date + "\n" +
                 "위치: " + d.latitude.value + d.latitude.direction + ", " +
                 d.longitude.value + d.longitude.direction + "\n규모: " + d.magnitude);
-            tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+            tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
         })
         .on("mouseout", function() {
             tooltip.style("visibility", "hidden");

@@ -19,10 +19,11 @@ function readRecordsFromFile(data) {
 // default 와 rules 항목은 필수이며 default 값은 rule 의 범위 밖의 지진 레코드에 대해 부여된다.
 // 하나의 룰은 지진의 규모가 다음 범위인 경우에 매치된다 (from <= M < to)
 var ColorRule = {
-    'default': '#ff9900',
+    'default': '#ff0000',
     'rules': [
-        { 'from': 0, 'to': 3, 'color': '#3366cc' },
-        { 'from': 3, 'to': 4, 'color': '#dc3912' },
+        { 'from': 0, 'to': 3, 'color': '#00cc00' },
+        { 'from': 3, 'to': 4, 'color': '#3333ff' },
+        { 'from': 4, 'to': 5, 'color': '#ff8000' },
     ]
 };
 
@@ -32,8 +33,9 @@ var ColorRule = {
 var RadiusRule = {
     'default': 5.5,
     'rules': [
-        { 'from': 0, 'to': 3, 'radius': 3.5 },
-        { 'from': 3, 'to': 4, 'radius': 4.5 },
+        { 'from': 0, 'to': 3, 'radius': 2.5 },
+        { 'from': 3, 'to': 4, 'radius': 3.5 },
+        { 'from': 4, 'to': 5, 'radius': 4.5 },
     ]
 };
 

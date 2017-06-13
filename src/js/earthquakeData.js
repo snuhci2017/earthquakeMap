@@ -1,4 +1,4 @@
-var earthquake_data = [
+var earthquakeData = [
     {
         "occurred_date": "2017-05-10 14:06",
         "magnitude": 2.5,

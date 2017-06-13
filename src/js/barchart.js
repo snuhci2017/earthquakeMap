@@ -3,16 +3,28 @@ var descriptionBarChart = 'DESCRIPTION: This bar chart shows how the occurrence 
     'From this visualization you can easily find the number of occurrences dramatically changed in 2016 with an earthquake largest in scale.';
 
 // Default configuration to set up a bar chart.
-var bcConfig = {};
-bcConfig['frame'] = { 'width': 700, 'height': 350 }; // The size of the frame in HTML doc.
-bcConfig['margin'] = { top: 20, right: 20, bottom: 60, left: 50 };
-bcConfig['chart'] = {
-    'width': bcConfig.frame.width - bcConfig.margin.left - bcConfig.margin.right,
-    'height': bcConfig.frame.height - bcConfig.margin.top - bcConfig.margin.bottom
-};
+// var bcConfig = {};
+// bcConfig['frame'] = { 'width': 700, 'height': 350 }; // The size of the frame in HTML doc.
+// bcConfig['margin'] = { top: 20, right: 20, bottom: 60, left: 50 };
+// bcConfig['chart'] = {
+//     'width': bcConfig.frame.width - bcConfig.margin.left - bcConfig.margin.right,
+//     'height': bcConfig.frame.height - bcConfig.margin.top - bcConfig.margin.bottom
+// };
+
+function setupBcConfig() {
+    var bcConfig = {};
+    bcConfig['frame'] = { width: 700, height: 350 }; // The size of the frame in HTML doc.
+    bcConfig['margin'] = { top: 20, right: 20, bottom: 60, left: 50 };
+    bcConfig['chart'] = {
+        width: bcConfig.frame.width - bcConfig.margin.left - bcConfig.margin.right,
+        height: bcConfig.frame.height - bcConfig.margin.top - bcConfig.margin.bottom
+    };
+
+    return bcConfig;
+}
 
 // compute statistics (# of occurrences per year) from the given records.
-function getStatistics(records, fromYear, toYear) {
+function getYearStatistics(records, fromYear, toYear) {
     var statistics = new Map();
     if (fromYear > toYear) {
         return [];
@@ -34,8 +46,54 @@ function getStatistics(records, fromYear, toYear) {
     return data.sort((a, b) => (a[0] - b[0]));
 }
 
+function getRange(magnitude) {
+    if (magnitude < 3) {
+        return '0-3'
+    } else if (magnitude < 4) {
+        return '3-4'
+    } else if (magnitude < 5) {
+        return '4-5'
+    } else {
+        return '5-6'
+    }
+}
+
+function getMagnitudeStatistics(records) {
+    var statistics = new Map();
+
+    records.forEach((record) => {
+        var magnitude = record.magnitude;
+        var range = getRange(magnitude);
+        if (!statistics.has(range))
+            statistics.set(range, 1);
+        else
+            statistics.set(range, statistics.get(range) + 1);
+    });
+
+    var data = [];
+    statistics.forEach((value, key, map) => data.push([key, value]));
+    return data.sort((a, b) => a[0].localeCompare(b[0]));
+}
+
+function getLocationStatistics(records) {
+    var statistics = new Map();
+
+    records.forEach((record) => {
+        var location = record.location;
+        if (!statistics.has(location))
+            statistics.set(location, 1);
+        else
+            statistics.set(location, statistics.get(location) + 1);
+    });
+
+    var data = [];
+    statistics.forEach((value, key, map) => data.push([key, value]));
+    return data.sort((a, b) => a[0].localeCompare(b[0]));
+
+}
+
 // shows yearly statistics of occurrence of earthquakes in a bar chart.
-function setupBarChart() {
+function setupBarChart(bcConfig) {
     bcConfig.x = d3.scale.ordinal().rangeRoundBands([0, bcConfig.chart.width], .05);
     bcConfig.y = d3.scale.linear().range([bcConfig.chart.height, 0]);
     bcConfig.x.domain([]);
@@ -49,7 +107,7 @@ function setupBarChart() {
         .append('g')
         .attr('transform', translate(bcConfig.margin.left, bcConfig.margin.top));
 
-    bcConfig.svg.append('g') // bcConfig the X axis 
+    bcConfig.svg.append('g') // bcConfig the X axis
         .attr('class', 'x axis')
         .attr('transform', translate(0, bcConfig.chart.height))
         .call(bcConfig.axis_x)
@@ -82,10 +140,7 @@ function setupBarChart() {
         .attr('font-size', 20);
 }
 
-// update the bars according to the given records.
-function updateBarChart(records, fromYear, toYear) {
-    var data = getStatistics(records, fromYear, toYear);
-
+function update(data, bcConfig, emphasize) {
     var tooltip = d3.select("body")
         .append("div")
         .style("position", "absolute")
@@ -100,7 +155,7 @@ function updateBarChart(records, fromYear, toYear) {
     var bars = bcConfig.svg.selectAll("rect").data(data, (d) => d[0]);
 
     bcConfig.svg.select(".x.axis") // update the X axis
-        .transition().duration(200).ease("sin-in-out")
+        .transition().duration(200)
         .call(bcConfig.axis_x)
         .selectAll('text')
         .style('text-anchor', 'end')
@@ -109,7 +164,7 @@ function updateBarChart(records, fromYear, toYear) {
         .attr('transform', 'rotate(-90)');
 
     bcConfig.svg.select(".y.axis") // update the Y axis
-        .transition().duration(200).ease("sin-in-out")
+        .transition().duration(200)
         .call(bcConfig.axis_y);
 
     // update bars in the chart.
@@ -125,9 +180,7 @@ function updateBarChart(records, fromYear, toYear) {
             tooltip.style("visibility", "visible");
             d3.select(this)
                 .style("fill", "red");
-            emphasizeRecords(function(rec) {
-                return rec.occurred_date.year == d[0];
-            });
+            emphasizeRecords((rec) => emphasize(rec, d));
         })
         .on("mousemove", function(d) {
             tooltip.text(d[0] + ", " + d[1]);
@@ -146,4 +199,29 @@ function updateBarChart(records, fromYear, toYear) {
         .attr('height', (d) => (bcConfig.chart.height - bcConfig.y(d[1])))
         .style('opacity', 1)
         .attr('fill', 'steelblue');
+
+}
+
+// update the bars according to the given records.
+function updateBarChart(bcConfig, records, fromYear, toYear) {
+    var data = getYearStatistics(records, fromYear, toYear);
+    update(data, bcConfig, function(rec, d) {
+        return rec.occurred_date === d[0];
+    });
+    setTimeout(magnitudeTransition, 2000, bcConfig, records);
+}
+
+function magnitudeTransition(bcConfig, records) {
+    var data = getMagnitudeStatistics(records);
+    update(data, bcConfig, function(rec, d) {
+        return getRange(rec.magnitude) === d[0];
+    });
+    setTimeout(locationTransition, 2000, bcConfig, records);
+}
+
+function locationTransition(bcConfig, records) {
+    var data = getLocationStatistics(records);
+    update(data, bcConfig, function(rec, d) {
+        return rec.location === d[0];
+    })
 }

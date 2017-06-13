@@ -140,7 +140,7 @@ function setupBarChart(bcConfig) {
         .attr('font-size', 20);
 }
 
-function update(data, bcConfig, emphasize) {
+function updateChart(data, bcConfig, emphasize) {
     var tooltip = d3.select("body")
         .append("div")
         .style("position", "absolute")
@@ -205,7 +205,7 @@ function update(data, bcConfig, emphasize) {
 // update the bars according to the given records.
 function updateBarChart(bcConfig, records, fromYear, toYear) {
     var data = getYearStatistics(records, fromYear, toYear);
-    update(data, bcConfig, function(rec, d) {
+    updateChart(data, bcConfig, function(rec, d) {
         return rec.occurred_date === d[0];
     });
     setTimeout(magnitudeTransition, 2000, bcConfig, records);
@@ -213,7 +213,7 @@ function updateBarChart(bcConfig, records, fromYear, toYear) {
 
 function magnitudeTransition(bcConfig, records) {
     var data = getMagnitudeStatistics(records);
-    update(data, bcConfig, function(rec, d) {
+    updateChart(data, bcConfig, function(rec, d) {
         return getRange(rec.magnitude) === d[0];
     });
     setTimeout(locationTransition, 2000, bcConfig, records);
@@ -221,7 +221,7 @@ function magnitudeTransition(bcConfig, records) {
 
 function locationTransition(bcConfig, records) {
     var data = getLocationStatistics(records);
-    update(data, bcConfig, function(rec, d) {
+    updateChart(data, bcConfig, function(rec, d) {
         return rec.location === d[0];
     })
 }

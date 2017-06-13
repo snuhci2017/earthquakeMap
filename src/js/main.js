@@ -26,7 +26,7 @@ $(document).ready(function() {
                 // 현재 년도를 저장해 놓는다
                 crtFromYear = value[0];
                 crtToYear = value[1];
-                update(bcConfig, records, crtFromYear, crtToYear,
+                updateTotal(bcConfig, records, crtFromYear, crtToYear,
                     crtFromMagnitude, crtToMagnitude);
             }));
 
@@ -38,7 +38,7 @@ $(document).ready(function() {
                 // 현재 규모를 저장해 놓는다
                 crtFromMagnitude = value[0];
                 crtToMagnitude = value[1];
-                update(bcConfig, records, crtFromYear, crtToYear,
+                updateTotal(bcConfig, records, crtFromYear, crtToYear,
                     crtFromMagnitude, crtToMagnitude);
             }));
 });
@@ -51,7 +51,7 @@ $(document).ready(function() {
  * @param fromMagnitude 시작 규모
  * @param toMagnitude 끝 규모
  */
-function update(bcConfig, records, fromYear, toYear, fromMagnitude, toMagnitude) {
+function updateTotal(bcConfig, records, fromYear, toYear, fromMagnitude, toMagnitude) {
     var filtered = filterRecords(records, fromYear, toYear, fromMagnitude, toMagnitude);
     updateEpicenterMap(filtered);
     updateBarChart(bcConfig, filtered, fromYear, toYear);

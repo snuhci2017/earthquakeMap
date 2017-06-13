@@ -104,7 +104,8 @@ function setupEpicenterMap(colorRule, radiusRule) {
 
 function emphasizeRecords(selector) {
     emConfig.svg.selectAll('circle')
-        .style('opacity', 0.15)
+        .transition().duration(200)
+        .style('opacity', 0.10)
         .filter(selector)
         .style('opacity', 1);
 }

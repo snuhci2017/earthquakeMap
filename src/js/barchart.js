@@ -121,7 +121,6 @@ function updateBarChart(records, fromYear, toYear) {
         .attr('width', bcConfig.x.rangeBand())
         .style('opacity', 0)
         .on('mouseover', function(d, i) {
-            console.log(d[0] + ", " + d[1]);
             tooltip.style("visibility", "visible");
             d3.select(this)
                 .style("fill", "red");

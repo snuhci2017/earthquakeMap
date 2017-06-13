@@ -3,21 +3,22 @@ body {
     font-family: helvetica;
 }
 
-nav {
+
+/*nav {
     width: 950px;
     height: 200px;
     border-style: solid;
     border-width: 1px 1px 1px 1px;
     border-color: chocolate;
     margin-bottom: 10px;
-}
+}*/
 
 #year-slider {
     width: 700px;
 }
 
 #magnitude-slider {
-    width: 500px;
+    width: 700px;
 }
 
 tr,
@@ -39,8 +40,8 @@ td {
 }
 
 #yearly-statistics {
-    width: 400px;
-    height: 300px;
+    /*width: 400px;
+    height: 300px;*/
     /*float: left;*/
 }
 

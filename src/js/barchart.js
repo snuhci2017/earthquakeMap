@@ -4,8 +4,8 @@ var descriptionBarChart = 'DESCRIPTION: This bar chart shows how the occurrence 
 
 // Default configuration to set up a bar chart.
 var bcConfig = {};
-bcConfig['frame'] = { 'width': 400, 'height': 300 }; // The size of the frame in HTML doc.
-bcConfig['margin'] = { top: 20, right: 20, bottom: 50, left: 50 };
+bcConfig['frame'] = { 'width': 700, 'height': 350 }; // The size of the frame in HTML doc.
+bcConfig['margin'] = { top: 20, right: 20, bottom: 60, left: 50 };
 bcConfig['chart'] = {
     'width': bcConfig.frame.width - bcConfig.margin.left - bcConfig.margin.right,
     'height': bcConfig.frame.height - bcConfig.margin.top - bcConfig.margin.bottom
@@ -62,8 +62,8 @@ function setupBarChart() {
     bcConfig.svg.append('text') // text label for the X axis
         .attr('transform', translate((bcConfig.chart.width / 2), (bcConfig.chart.height + bcConfig.margin.bottom)))
         .style('text-anchor', 'middle')
-        .text('Year')
-        .attr('font-size', 14);
+        .text('년도')
+        .attr('font-size', 20);
 
     bcConfig.svg.append('g') // bcConfig the Y axis
         .attr('class', 'y axis')
@@ -78,8 +78,8 @@ function setupBarChart() {
         .attr('x', 0 - (bcConfig.chart.height / 2))
         .attr('dy', '1em')
         .style('text-anchor', 'middle')
-        .text('#(Occurrence)')
-        .attr('font-size', 14);
+        .text('발생 횟수')
+        .attr('font-size', 20);
 }
 
 // update the bars according to the given records.
@@ -132,11 +132,11 @@ function updateBarChart(records, fromYear, toYear) {
             console.log(d[0] + ", " + d[1]);
             tooltip.style("visibility", "visible");
             d3.select(this)
-                .style("fill", "blue");
+                .style("fill", "red");
         })
         .on("mousemove", function(d) {
             tooltip.text(d[0] + ", " + d[1]);
-            tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+            tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
         })
         .on("mouseout", function() {
             d3.select(this).style("fill", "steelblue");

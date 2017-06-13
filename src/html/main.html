@@ -10,25 +10,50 @@
 
 <body>
     <div>
-        <nav>
-            <h4>Range of Year</h4>
-            <div id="year-slider"></div>
-            <h4>Range of Magnitude</h4>
-            <div id="magnitude-slider"></div>
-        </nav>
+        <!--<nav>
+
+        </nav>-->
         <section style="width: 100%">
             <table id="main-interface">
                 <tr>
-                    <td id="epicenter-plot"></td>
-                    <td id="yearly-statistics"></td>
-                </tr>
-                <tr>
-                    <td>
-                        <button id="update">Update Charts</button>
+                    <td rowspan="3">
+                        <div id="epicenter-plot"></div>
                     </td>
                     <td>
-                        <a href="http://www.openstreetmap.org/#map=9/31.23/30.05">View a map on OpenStreetMap</a>
-                        <p>mean(magnitude) = <span id="mean-magnitude"></span>, #(occurrence) = <span id="num-occurrences"></span></p>
+                        <div id="yearly-statistics"></div>
+                    </td>
+                    <td width="450px">
+                        <div id="magnitude-statistics">
+                            <p>규모별 bar 차트</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td height="50%" colspan="2">Pie 차트들 위치</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <table max-height="200px">
+                            <tr>
+                                <td rowspan="2" width="300px">
+                                    <p>Legend 위치</p>
+                                </td>
+                                <td>
+                                    <h3 style="padding: 0px 5px;">발생 연도 범위</h3>
+                                </td>
+                                <td>
+                                    <div id="year-slider"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h3 style="padding: 0px 5px;">규모 범위</h3>
+                                </td>
+                                <td>
+                                    <div id="magnitude-slider"></div>
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
             </table>

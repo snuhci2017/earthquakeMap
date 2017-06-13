@@ -42,7 +42,7 @@ function setupEpicenterMap(colorRule, radiusRule) {
     emConfig.svg.append('text') // X 축 레이블 테스트 추가
         .attr('transform', translate((emConfig.plot.width + emConfig.margin.left) / 2, (emConfig.plot.height + emConfig.margin.bottom)))
         .style('text-anchor', 'middle')
-        .text('Longitude')
+        .text('경도')
         .attr('font-size', 18);
 
     emConfig.axis_y = d3.svg.axis()
@@ -61,40 +61,40 @@ function setupEpicenterMap(colorRule, radiusRule) {
         .attr('x', 0 - (emConfig.plot.height / 2))
         .attr('dy', '1em')
         .style('text-anchor', 'middle')
-        .text('Latitude')
+        .text('위도')
         .attr('font-size', 18);
 
-    emConfig.brush = d3.svg.brush()
-        .x(emConfig.x)
-        .y(emConfig.y)
-        .on('brush', update)
-        .on('brushend', update)
-
-    function update() {
-        var extent = emConfig.brush.extent();
-        var widthRange = [extent[0][0], extent[1][0]];
-        var lengthRange = [extent[0][1], extent[1][1]];
-        var magnitudeSum = 0,
-            n = 0;
-
-        emConfig.svg
-            .selectAll('circle')
-            .style('opacity', 0.5)
-            .filter((d) => (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
-                lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
-            .style('opacity', 1)
-            .each((d) => {
-                n++;
-                magnitudeSum += d.magnitude;
-            });
-
-        if (n > 0) {
-            d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / n));
-            d3.select('#num-occurrences').text(d3.format('f')(n));
-        }
-    }
-
     // TODO: 브러쉬는 일시적으로 비활성화 (개선 필요)
+    // emConfig.brush = d3.svg.brush()
+    //     .x(emConfig.x)
+    //     .y(emConfig.y)
+    //     .on('brush', update)
+    //     .on('brushend', update)
+
+    // function update() {
+    //     var extent = emConfig.brush.extent();
+    //     var widthRange = [extent[0][0], extent[1][0]];
+    //     var lengthRange = [extent[0][1], extent[1][1]];
+    //     var magnitudeSum = 0,
+    //         n = 0;
+
+    //     emConfig.svg
+    //         .selectAll('circle')
+    //         .style('opacity', 0.5)
+    //         .filter((d) => (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
+    //             lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
+    //         .style('opacity', 1)
+    //         .each((d) => {
+    //             n++;
+    //             magnitudeSum += d.magnitude;
+    //         });
+
+    //     if (n > 0) {
+    //         d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / n));
+    //         d3.select('#num-occurrences').text(d3.format('f')(n));
+    //     }
+    // }
+
     // emConfig.svg
     //     .append('g')
     //     .attr('class', 'brush')

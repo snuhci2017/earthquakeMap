@@ -104,7 +104,7 @@ function setupEpicenterMap(colorRule, radiusRule) {
 
 function emphasizeRecords(selector) {
     emConfig.svg.selectAll('circle')
-        .style('opacity', 0.2)
+        .style('opacity', 0.15)
         .filter(selector)
         .style('opacity', 1);
 }
@@ -122,7 +122,11 @@ function updateEpicenterMap(records) {
         .style("visibility", "hidden")
         .text("a simple tooltip");
 
-    circles.exit().transition().duration(200).remove();
+    circles.exit().transition().duration(200)
+        .attr('r', (d) => 0)
+        .attr('cx', (d) => (emConfig.plot.width + emConfig.margin.left) / 2)
+        .attr('cy', (d) => (emConfig.plot.height + emConfig.margin.bottom) / 2)
+        .remove();
 
     circles.transition().duration(200)
         .attr('r', (d) => determineRadius(d.magnitude, emConfig.radiusRule))
@@ -132,10 +136,9 @@ function updateEpicenterMap(records) {
 
     circles.enter()
         .append('circle')
-        .attr('r', (d) => determineRadius(d.magnitude, emConfig.radiusRule))
-        .attr('cx', (d) => emConfig.x(d.longitude.value))
-        .attr('cy', (d) => emConfig.y(d.latitude.value))
-        .style('fill', (d) => determineColor(d.magnitude, emConfig.colorRule))
+        .attr('r', (d) => 0)
+        .attr('cx', (d) => (emConfig.plot.width + emConfig.margin.left) / 2)
+        .attr('cy', (d) => (emConfig.plot.height + emConfig.margin.bottom) / 2)
         .on('mouseover', function() {
             tooltip.style("visibility", "visible");
         })
@@ -148,12 +151,17 @@ function updateEpicenterMap(records) {
 
             tooltip.text("시간: " + date + "\n" +
                 "위치: " + d.latitude.value.toFixed(3) + d.latitude.direction + ", " +
-                d.longitude.value.toFixed(3) + d.longitude.direction + "\n규모: " + d.magnitude);
+                d.longitude.value.toFixed(3) + d.longitude.direction + "\n 규모: " + d.magnitude);
             tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
         })
         .on("mouseout", function() {
             tooltip.style("visibility", "hidden");
-        });
+        })
+        .transition().duration(200)
+        .attr('r', (d) => determineRadius(d.magnitude, emConfig.radiusRule))
+        .attr('cx', (d) => emConfig.x(d.longitude.value))
+        .attr('cy', (d) => emConfig.y(d.latitude.value))
+        .style('fill', (d) => determineColor(d.magnitude, emConfig.colorRule));
 }
 
 // magnitude 에 따라 점의 색깔을 결정한다.

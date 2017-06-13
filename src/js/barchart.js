@@ -115,14 +115,6 @@ function updateBarChart(records, fromYear, toYear) {
     // update bars in the chart.
     bars.exit().remove();
 
-    //
-    bars.transition().duration(200)
-        .attr('x', (d) => bcConfig.x(d[0]))
-        .attr('width', bcConfig.x.rangeBand())
-        .attr('y', (d) => bcConfig.y(d[1]))
-        .attr('height', (d) => (bcConfig.chart.height - bcConfig.y(d[1])))
-        .attr('fill', 'steelblue');
-
     bars.enter()
         .append('rect')
         .attr('x', (d) => bcConfig.x(d[0]))
@@ -136,15 +128,18 @@ function updateBarChart(records, fromYear, toYear) {
         })
         .on("mousemove", function(d) {
             tooltip.text(d[0] + ", " + d[1]);
-            tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+            tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
         })
         .on("mouseout", function() {
             d3.select(this).style("fill", "steelblue");
             tooltip.style("visibility", "hidden");
-        })
-        .transition().duration(200)
+        });
+
+    bars.transition().duration(200)
+        .attr('x', (d) => bcConfig.x(d[0]))
+        .attr('width', bcConfig.x.rangeBand())
         .attr('y', (d) => bcConfig.y(d[1]))
         .attr('height', (d) => (bcConfig.chart.height - bcConfig.y(d[1])))
         .style('opacity', 1)
-        .style('fill', 'steelblue');
+        .attr('fill', 'steelblue');
 }

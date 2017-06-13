@@ -31,11 +31,11 @@ var ColorRule = {
 // default 와 rules 항목은 필수이며 default 값은 rule 의 범위 밖의 지진 레코드에 대해 부여된다.
 // 하나의 룰은 지진의 규모가 다음 범위인 경우에 매치된다 (from <= M < to)
 var RadiusRule = {
-    'default': 5.5,
+    'default': 6.5,
     'rules': [
-        { 'from': 0, 'to': 3, 'radius': 2.5 },
-        { 'from': 3, 'to': 4, 'radius': 3.5 },
-        { 'from': 4, 'to': 5, 'radius': 4.5 },
+        { 'from': 0, 'to': 3, 'radius': 3.5 },
+        { 'from': 3, 'to': 4, 'radius': 4.5 },
+        { 'from': 4, 'to': 5, 'radius': 5.5 },
     ]
 };
 

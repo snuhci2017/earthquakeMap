@@ -1,6 +1,7 @@
 // record 를 주어진 파일에서 읽어서 파싱한다.
 function readRecordsFromFile(data) {
     var records = [];
+    var id = 0;
 
     data.forEach(function(record) {
         var new_record = {};
@@ -8,6 +9,7 @@ function readRecordsFromFile(data) {
         new_record['occurred_date'] = parseAsDate(record['occurred_date']);
         new_record['longitude'] = parseAsSingleCoordinate(record['longitude']);
         new_record['latitude'] = parseAsSingleCoordinate(record['latitude']);
+        new_record['id'] = id++;
         if (!isNaN(new_record.longitude.value))
             records.push(new_record);
     });
@@ -65,10 +67,18 @@ function parseAsDate(str) {
     return date;
 }
 
+// Jittering을 위한 random number 생성 함수
+function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+var jitterMax = 0.05,
+    jitterMin = -0.05;
+
 function parseAsSingleCoordinate(str) {
     var parsed = str.split(' ');
     var coord = {};
-    coord['value'] = parseFloat(parsed[0]);
+    coord['value'] = parseFloat(parsed[0]) + getRandom(jitterMin, jitterMax);
     coord['direction'] = parsed[1];
     return coord;
 }

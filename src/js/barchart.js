@@ -125,6 +125,9 @@ function updateBarChart(records, fromYear, toYear) {
             tooltip.style("visibility", "visible");
             d3.select(this)
                 .style("fill", "red");
+            emphasizeRecords(function(rec) {
+                return rec.occurred_date.year == d[0];
+            });
         })
         .on("mousemove", function(d) {
             tooltip.text(d[0] + ", " + d[1]);
@@ -133,6 +136,7 @@ function updateBarChart(records, fromYear, toYear) {
         .on("mouseout", function() {
             d3.select(this).style("fill", "steelblue");
             tooltip.style("visibility", "hidden");
+            emphasizeRecords((rec) => true);
         });
 
     bars.transition().duration(200)

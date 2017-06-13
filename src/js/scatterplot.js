@@ -102,11 +102,18 @@ function setupEpicenterMap(colorRule, radiusRule) {
 
 }
 
+function emphasizeRecords(selector) {
+    emConfig.svg.selectAll('circle')
+        .style('opacity', 0.2)
+        .filter(selector)
+        .style('opacity', 1);
+}
+
 // 주어진 레코드를 위-경도 plot에 점으로 출력한다. 점의 킉와 색상은 초기화 시 설정한 룰들을 이용한다.
 function updateEpicenterMap(records) {
     var circles = emConfig.svg
         .selectAll('circle')
-        .data(records, (d, i) => i);
+        .data(records, (d) => d.id);
 
     var tooltip = d3.select("body")
         .append("div")
@@ -140,16 +147,14 @@ function updateEpicenterMap(records) {
                 ":" + d.occurred_date.minute.toString();
 
             tooltip.text("시간: " + date + "\n" +
-                "위치: " + d.latitude.value + d.latitude.direction + ", " +
-                d.longitude.value + d.longitude.direction + "\n규모: " + d.magnitude);
+                "위치: " + d.latitude.value.toFixed(3) + d.latitude.direction + ", " +
+                d.longitude.value.toFixed(3) + d.longitude.direction + "\n규모: " + d.magnitude);
             tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
         })
         .on("mouseout", function() {
             tooltip.style("visibility", "hidden");
         });
 }
-
-
 
 // magnitude 에 따라 점의 색깔을 결정한다.
 function determineColor(magnitude, colorRule) {

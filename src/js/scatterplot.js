@@ -69,32 +69,47 @@ function setupEpicenterMap(bcConfig, colorRule, radiusRule) {
     emConfig.brush = d3.svg.brush()
         .x(emConfig.x)
         .y(emConfig.y)
-        .on('brush', update)
-        .on('brushend', update)
-
-    function update() {
-        var extent = emConfig.brush.extent();
-        var widthRange = [extent[0][0], extent[1][0]];
-        var lengthRange = [extent[0][1], extent[1][1]];
-        var isBrushCleared = emConfig.brush.empty();
-        var selected = [];
-
-        emConfig.svg
-            .selectAll('circle')
-            .style("visibility", "hidden")
-            .filter((d) => isBrushCleared || (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
-                lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
-            .style("visibility", "visible")
-            .each((d) => selected.push(d));
-
-        updateBarChart(emConfig.bcConfig, selected);
-    }
+        .on('brush', updateBrush)
+        .on('brushend', updateBrush)
 
     emConfig.svg
         .append('g')
         .attr('class', 'brush')
         .call(emConfig.brush);
 
+}
+
+function clearBrush() {
+    var selected = [];
+    console.log(emConfig.brush.extent());
+    emConfig.brush.clear();
+    emConfig.brush.extent([
+        [0, 0],
+        [0, 0]
+    ]);
+    console.log(emConfig.brush.extent());
+    emConfig.svg.select(".brush").call(emConfig.brush);
+
+    updateBrush();
+}
+
+function updateBrush() {
+    var extent = emConfig.brush.extent();
+    var widthRange = [extent[0][0], extent[1][0]];
+    var lengthRange = [extent[0][1], extent[1][1]];
+    var isBrushCleared = emConfig.brush.empty();
+    var selected = [];
+
+    emConfig.svg
+        .selectAll('circle')
+        .style('opacity', 0.22)
+        .filter((d) => isBrushCleared || (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
+            lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
+        .style('opacity', 1)
+        .style('fill-opacity', 0.5)
+        .each((d) => selected.push(d));
+
+    updateBarChart(emConfig.bcConfig, selected);
 }
 
 function emphasizeRecords(selector) {
@@ -106,9 +121,10 @@ function emphasizeRecords(selector) {
     emConfig.svg.selectAll('circle')
         .filter((d) => isBrushCleared || (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
             lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
-        .style("visibility", "hidden")
+        .style('opacity', 0.22)
         .filter(selector)
-        .style("visibility", "visible");
+        .style('opacity', 1)
+        .style('fill-opacity', 0.5);
 }
 
 // 주어진 레코드를 위-경도 plot에 점으로 출력한다. 점의 크기와 색상은 초기화 시 설정한 함수들(colorRule & radiusRule)을 이용한다.

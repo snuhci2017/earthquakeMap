@@ -17,12 +17,17 @@ function readRecordsFromFile(data) {
             new_record['location'] = location[0];
 
         new_record['id'] = id++;
-        if (!isNaN(new_record.longitude.value))
+        if (!isNaN(new_record.longitude.value) && isInValidRange(new_record.longitude, new_record.latitude))
             records.push(new_record);
     });
 
     return records;
 }
+
+// Scatter Plot에 출력 가능한 위치의 범위
+var validGeoRange = {};
+validGeoRange['longitude'] = { left: 122, right: 131 };
+validGeoRange['latitude'] = { top: 43, bottom: 32.8 };
 
 // ColorRule 은 지진의 규모 범위에 대한 색상을 지정하는 룰이다.
 // default 와 rules 항목은 필수이며 default 값은 rule 의 범위 밖의 지진 레코드에 대해 부여된다.
@@ -48,6 +53,10 @@ var RadiusRule = {
     ]
 };
 
+function isInValidRange(longitude, latitude) {
+    return ((validGeoRange.longitude.left <= longitude.value && longitude.value <= validGeoRange.longitude.right) &&
+        (validGeoRange.latitude.bottom <= latitude.value && latitude.value <= validGeoRange.latitude.top));
+}
 
 function removeExistingChart(chartId) {
     var elem = document.getElementById(chartId);

@@ -8,8 +8,8 @@ var emConfig = {};
 emConfig['frame'] = { 'width': 605, 'height': 850 }; // The size of the frame in HTML doc.
 emConfig['plot'] = { 'width': 555, 'height': 800 };
 emConfig['margin'] = { left: 50, bottom: 50 };
-emConfig['longitude'] = { left: 122, right: 131 };
-emConfig['latitude'] = { top: 43, bottom: 32.8 };
+emConfig['longitude'] = { left: validGeoRange.longitude.left, right: validGeoRange.longitude.right };
+emConfig['latitude'] = { top: validGeoRange.latitude.top, bottom: validGeoRange.latitude.bottom };
 
 // 위-경도 plot을 초기화 한다.
 // 규모별로 dot의 색깔과 크기를 지정하는 함수를 전달할 수 있다 (colorRule & radiusRule, respectively).
@@ -65,40 +65,40 @@ function setupEpicenterMap(colorRule, radiusRule) {
         .attr('font-size', 18);
 
     // TODO: 브러쉬는 일시적으로 비활성화 (개선 필요)
-    // emConfig.brush = d3.svg.brush()
-    //     .x(emConfig.x)
-    //     .y(emConfig.y)
-    //     .on('brush', update)
-    //     .on('brushend', update)
+    emConfig.brush = d3.svg.brush()
+        .x(emConfig.x)
+        .y(emConfig.y)
+        .on('brush', update)
+        .on('brushend', update)
 
-    // function update() {
-    //     var extent = emConfig.brush.extent();
-    //     var widthRange = [extent[0][0], extent[1][0]];
-    //     var lengthRange = [extent[0][1], extent[1][1]];
-    //     var magnitudeSum = 0,
-    //         n = 0;
+    function update() {
+        var extent = emConfig.brush.extent();
+        var widthRange = [extent[0][0], extent[1][0]];
+        var lengthRange = [extent[0][1], extent[1][1]];
+        var magnitudeSum = 0,
+            n = 0;
 
-    //     emConfig.svg
-    //         .selectAll('circle')
-    //         .style('opacity', 0.5)
-    //         .filter((d) => (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
-    //             lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
-    //         .style('opacity', 1)
-    //         .each((d) => {
-    //             n++;
-    //             magnitudeSum += d.magnitude;
-    //         });
+        emConfig.svg
+            .selectAll('circle')
+            .style("visibility", "hidden")
+            .filter((d) => (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
+                lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
+            .style("visibility", "visible")
+            .each((d) => {
+                n++;
+                magnitudeSum += d.magnitude;
+            });
 
-    //     if (n > 0) {
-    //         d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / n));
-    //         d3.select('#num-occurrences').text(d3.format('f')(n));
-    //     }
-    // }
+        if (n > 0) {
+            d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / n));
+            d3.select('#num-occurrences').text(d3.format('f')(n));
+        }
+    }
 
-    // emConfig.svg
-    //     .append('g')
-    //     .attr('class', 'brush')
-    //     .call(emConfig.brush)
+    emConfig.svg
+        .append('g')
+        .attr('class', 'brush')
+        .call(emConfig.brush)
 
 }
 

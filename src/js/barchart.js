@@ -3,14 +3,6 @@ var descriptionBarChart = 'DESCRIPTION: This bar chart shows how the occurrence 
     'From this visualization you can easily find the number of occurrences dramatically changed in 2016 with an earthquake largest in scale.';
 
 // Default configuration to set up a bar chart.
-// var bcConfig = {};
-// bcConfig['frame'] = { 'width': 700, 'height': 350 }; // The size of the frame in HTML doc.
-// bcConfig['margin'] = { top: 20, right: 20, bottom: 60, left: 50 };
-// bcConfig['chart'] = {
-//     'width': bcConfig.frame.width - bcConfig.margin.left - bcConfig.margin.right,
-//     'height': bcConfig.frame.height - bcConfig.margin.top - bcConfig.margin.bottom
-// };
-
 function setupBcConfig() {
     var bcConfig = {};
     bcConfig['frame'] = { width: 900, height: 350 }; // The size of the frame in HTML doc.
@@ -147,6 +139,8 @@ function setupBarChart(bcConfig) {
 }
 
 function updateChart(data, bcConfig, emphasize) {
+    bcConfig.svg.selectAll(".arc").remove();
+
     var tooltip = d3.select("body")
         .append("div")
         .style("position", "absolute")
@@ -309,6 +303,15 @@ function updateYearMagnitude(bcConfig, records) {
     })
 }
 
+function updateLocationMagnitude(bcConfig, records) {
+    var data = getYearMagnitudeStatistics(records);
+    bcConfig.x_text.text("지역");
+    bcConfig.y_text.text("평균 규모");
+    updateChart(data, bcConfig, function(rec, d) {
+        return rec.occurred_date.year.toString() === d[0];
+    })
+}
+
 /**
  * data 를 filtering 해서 원하는 지진만 표시한다
  * @param records 전체 지진 records
@@ -341,6 +344,7 @@ function chartTransition(bcConfig) {
 
 function updateChartFromBrush(bcConfig, brushedData) {
     bcConfig.filteredData = brushedData;
+
     if (bcConfig.currentState === "년도")
         updateYearOccur(bcConfig, brushedData);
     else if (bcConfig.currentState === "규모")

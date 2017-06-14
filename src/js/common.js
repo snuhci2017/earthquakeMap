@@ -24,6 +24,25 @@ function readRecordsFromFile(data) {
     return records;
 }
 
+function readNuclear(data) {
+    var records = [];
+    var id = 0;
+
+    data.forEach(function(record) {
+        var new_record = {};
+        new_record['name'] = record['name'];
+        new_record['occurred_date'] = parseAsDate(record['occurred_date']);
+        new_record['longitude'] = parseAsSingleCoordinate(record['longitude']);
+        new_record['latitude'] = parseAsSingleCoordinate(record['latitude']);
+
+        new_record['id'] = id++;
+        records.push(new_record);
+    });
+
+    return records;
+}
+
+
 // Scatter Plot에 출력 가능한 위치의 범위
 var validGeoRange = {};
 validGeoRange['longitude'] = { left: 122, right: 131 };

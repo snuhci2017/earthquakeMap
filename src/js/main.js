@@ -68,4 +68,6 @@ $(document).ready(function() {
             bcConfig.currentState = d;
             chartTransition(bcConfig);
         });
+
+    drawNuclear();
 });

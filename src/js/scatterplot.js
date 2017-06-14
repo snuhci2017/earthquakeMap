@@ -103,8 +103,7 @@ function updateBrush() {
     emConfig.svg
         .selectAll('circle')
         .style('opacity', 0.22)
-        .filter((d) => isBrushCleared || (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
-            lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
+        .filter((d) => isBrushCleared || isInsideBrush(emConfig.brush, d))
         .style('opacity', 1)
         .style('fill-opacity', 0.5)
         .each((d) => selected.push(d));
@@ -119,16 +118,28 @@ function emphasizeRecords(selector) {
     var isBrushCleared = emConfig.brush.empty();
 
     emConfig.svg.selectAll('circle')
-        .filter((d) => isBrushCleared || (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
-            lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
+        .filter((d) => isBrushCleared || isInsideBrush(emConfig.brush, d))
         .style('opacity', 0.22)
         .filter(selector)
         .style('opacity', 1)
         .style('fill-opacity', 0.5);
 }
 
+function isInsideBrush(brush, d) {
+    var extent = brush.extent();
+    var widthRange = [extent[0][0], extent[1][0]];
+    var lengthRange = [extent[0][1], extent[1][1]];
+    return (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
+        lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]);
+}
+
 // 주어진 레코드를 위-경도 plot에 점으로 출력한다. 점의 크기와 색상은 초기화 시 설정한 함수들(colorRule & radiusRule)을 이용한다.
 function updateEpicenterMap(records) {
+
+
+    var isBrushCleared = emConfig.brush.empty();
+    var selected = [];
+
     var circles = emConfig.svg
         .selectAll('circle')
         .data(records, (d) => d.id);
@@ -152,7 +163,11 @@ function updateEpicenterMap(records) {
         .attr('cy', (d) => emConfig.y(d.latitude.value))
         .style('fill', (d) => emConfig.colorRule(d.magnitude))
         .style('stroke', 'red')
-        .style('fill-opacity', 0.5);
+        .style('opacity', 0.22)
+        .filter((d) => (isBrushCleared || isInsideBrush(emConfig.brush, d)))
+        .style('opacity', 1)
+        .style('fill-opacity', 0.5)
+        .each((d) => selected.push(d));
 
     circles.enter()
         .append('circle')
@@ -182,5 +197,13 @@ function updateEpicenterMap(records) {
         .attr('cy', (d) => emConfig.y(d.latitude.value))
         .style('fill', (d) => emConfig.colorRule(d.magnitude))
         .style('stroke', 'red')
-        .style('fill-opacity', 0.5);
+        .style('opacity', 0.22)
+        .filter(function(d) {
+            return (isBrushCleared || isInsideBrush(emConfig.brush, d));
+        })
+        .style('opacity', 1)
+        .style('fill-opacity', 0.5)
+        .each((d) => selected.push(d));
+
+    updateBarChart(emConfig.bcConfig, selected);
 }

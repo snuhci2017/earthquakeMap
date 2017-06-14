@@ -15,7 +15,7 @@ $(document).ready(function() {
     setupEpicenterMap(bcConfig, determineColor, determineRadius);
     setupBarChart(bcConfig);
     updateEpicenterMap(filtered);
-    updateBarChart(bcConfig, filtered);
+    //updateBarChart(bcConfig, filtered);
 
     // slider 가 변경 될시 update function 을 부른다
     d3.select('#year-slider').call(
@@ -26,7 +26,7 @@ $(document).ready(function() {
             // 현재 년도를 저장해 놓는다
             crtFromYear = value[0];
             crtToYear = value[1];
-            clearBrush();
+            //clearBrush();
             updateTotal(bcConfig, records, crtFromYear, crtToYear,
                 crtFromMagnitude, crtToMagnitude);
         }));
@@ -39,7 +39,7 @@ $(document).ready(function() {
             // 현재 규모를 저장해 놓는다
             crtFromMagnitude = value[0];
             crtToMagnitude = value[1];
-            clearBrush();
+            //clearBrush();
             updateTotal(bcConfig, records, crtFromYear, crtToYear,
                 crtFromMagnitude, crtToMagnitude);
         }));
@@ -56,5 +56,5 @@ $(document).ready(function() {
 function updateTotal(bcConfig, records, fromYear, toYear, fromMagnitude, toMagnitude) {
     var filtered = filterRecords(records, fromYear, toYear, fromMagnitude, toMagnitude);
     updateEpicenterMap(filtered);
-    updateBarChart(bcConfig, filtered);
+    //updateBarChart(bcConfig, filtered);
 }

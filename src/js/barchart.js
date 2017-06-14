@@ -23,32 +23,53 @@ function setupBcConfig() {
     return bcConfig;
 }
 
-// compute statistics (# of occurrences per year) from the given records.
-function getYearStatistics(records, fromYear, toYear) {
+function getOccurStatistics(records, getVarFromRecord) {
     var statistics = new Map();
-    if (fromYear > toYear) {
-        return [];
-    } else {
-        for (var year = fromYear; year <= toYear; year++) {
-            if (!statistics.has(year)) {
-                statistics.set(year.toString(), 0);
-            }
-        }
-    }
 
     records.forEach((record) => {
-        var year = record.occurred_date.year.toString();
-        statistics.set(year, statistics.get(year) + 1);
+        var variable = getVarFromRecord(record);
+        if (!statistics.has(variable))
+            statistics.set(variable, 1);
+        else
+            statistics.set(variable, statistics.get(variable) + 1);
     });
 
     var data = [];
     statistics.forEach((value, key, map) => data.push([key, value]));
-    return data.sort((a, b) => (a[0] - b[0]));
+    return data.sort((a, b) => a[0].localeCompare(b[0]));
+}
+
+function getMagnitudeStatistics(records, getVarFromRecord) {
+    var statistics = new Map();
+
+    records.forEach((record) => {
+        var variable = getVarFromRecord(record);
+        if (!statistics.has(variable)) {
+            statistics.set(variable, [record.magnitude, 1]);
+        } else {
+            var [sumOfMagnitude, numOfOccur] = statistics.get(variable);
+            statistics.set(variable, [sumOfMagnitude + record.magnitude, 1 + numOfOccur]);
+        }
+    });
+
+    var data = [];
+    statistics.forEach((v, k, map) => {
+        var [sumOfMagnitude, numOfOccur] = v;
+        data.push([k, sumOfMagnitude / numOfOccur]);
+    });
+    return data.sort((a, b) => a[0].localeCompare(b[0]));
+}
+
+// compute statistics (# of occurrences per year) from the given records.
+function getYearOccurStatistics(records) {
+    return getOccurStatistics(records, function(record) {
+        return record.occurred_date.year.toString();
+    });
 }
 
 function getRange(magnitude) {
     if (magnitude < 3) {
-        return '0-3'
+        return '1-3'
     } else if (magnitude < 4) {
         return '3-4'
     } else if (magnitude < 5) {
@@ -58,38 +79,22 @@ function getRange(magnitude) {
     }
 }
 
-function getMagnitudeStatistics(records) {
-    var statistics = new Map();
-
-    records.forEach((record) => {
-        var magnitude = record.magnitude;
-        var range = getRange(magnitude);
-        if (!statistics.has(range))
-            statistics.set(range, 1);
-        else
-            statistics.set(range, statistics.get(range) + 1);
+function getMagnitudeOccurStatistics(records) {
+    return getOccurStatistics(records, function(record) {
+        return getRange(record.magnitude);
     });
-
-    var data = [];
-    statistics.forEach((value, key, map) => data.push([key, value]));
-    return data.sort((a, b) => a[0].localeCompare(b[0]));
 }
 
-function getLocationStatistics(records) {
-    var statistics = new Map();
-
-    records.forEach((record) => {
-        var location = record.location;
-        if (!statistics.has(location))
-            statistics.set(location, 1);
-        else
-            statistics.set(location, statistics.get(location) + 1);
+function getLocationOccurStatistics(records) {
+    return getOccurStatistics(records, function(record) {
+        return record.location;
     });
+}
 
-    var data = [];
-    statistics.forEach((value, key, map) => data.push([key, value]));
-    return data.sort((a, b) => a[0].localeCompare(b[0]));
-
+function getYearMagnitudeStatistics(records) {
+    return getMagnitudeStatistics(records, function(record) {
+        return record.occurred_date.year.toString();
+    });
 }
 
 // shows yearly statistics of occurrence of earthquakes in a bar chart.
@@ -100,6 +105,7 @@ function setupBarChart(bcConfig) {
     bcConfig.y.domain([0, 0]);
     bcConfig.axis_x = d3.svg.axis().scale(bcConfig.x).orient('bottom');
     bcConfig.axis_y = d3.svg.axis().scale(bcConfig.y).orient('left').ticks(10);
+    bcConfig.currentState = "년도";
 
     bcConfig.svg = d3.select('#yearly-statistics').append('svg')
         .attr('width', bcConfig.frame.width)
@@ -117,7 +123,7 @@ function setupBarChart(bcConfig) {
         .attr('dy', '-.55em')
         .attr('transform', 'rotate(-90)');
 
-    bcConfig.svg.append('text') // text label for the X axis
+    bcConfig.x_text = bcConfig.svg.append('text') // text label for the X axis
         .attr('transform', translate((bcConfig.chart.width / 2), (bcConfig.chart.height + bcConfig.margin.bottom)))
         .style('text-anchor', 'middle')
         .text('년도')
@@ -130,7 +136,7 @@ function setupBarChart(bcConfig) {
         .attr('transform', 'rotate(-90)')
         .attr('dy', '.71em');
 
-    bcConfig.svg.append('text') // text label for the Y axis
+    bcConfig.y_text = bcConfig.svg.append('text') // text label for the Y axis
         .attr('transform', 'rotate(-90)')
         .attr('y', 0 - bcConfig.margin.left)
         .attr('x', 0 - (bcConfig.chart.height / 2))
@@ -203,25 +209,66 @@ function updateChart(data, bcConfig, emphasize) {
 }
 
 // update the bars according to the given records.
-function updateBarChart(bcConfig, records, fromYear, toYear) {
-    var data = getYearStatistics(records, fromYear, toYear);
+function updateYearBarChart(bcConfig, records) {
+    var data = getYearOccurStatistics(records);
+    bcConfig.x_text.text("년도");
     updateChart(data, bcConfig, function(rec, d) {
-        return rec.occurred_date === d[0];
+        return rec.occurred_date.year.toString() === d[0];
     });
-    setTimeout(magnitudeTransition, 2000, bcConfig, records);
 }
 
-function magnitudeTransition(bcConfig, records) {
-    var data = getMagnitudeStatistics(records);
+function updateMagnitudeChart(bcConfig, records) {
+    var data = getMagnitudeOccurStatistics(records);
+    bcConfig.x_text.text("규모");
     updateChart(data, bcConfig, function(rec, d) {
         return getRange(rec.magnitude) === d[0];
     });
-    setTimeout(locationTransition, 2000, bcConfig, records);
 }
 
-function locationTransition(bcConfig, records) {
-    var data = getLocationStatistics(records);
+function updateLocationChart(bcConfig, records) {
+    var data = getLocationOccurStatistics(records);
+    bcConfig.x_text.text("지역");
     updateChart(data, bcConfig, function(rec, d) {
         return rec.location === d[0];
     })
+}
+
+function updateYearMagnitude(bcConfig, records) {
+    var data = getYearMagnitudeStatistics(records);
+    bcConfig.x_text.text("년도");
+    bcConfig.y_text.text("평균 규모");
+    updateChart(data, bcConfig, function(rec, d) {
+        return rec.occurred_date.year.toString() === d[0];
+    })
+}
+
+/**
+ * data 를 filtering 해서 원하는 지진만 표시한다
+ * @param records 전체 지진 records
+ * @param fromYear 시작 년도
+ * @param toYear 끝 년도
+ * @param fromMagnitude 시작 규모
+ * @param toMagnitude 끝 규모
+ */
+function updateTotal(bcConfig, records, fromYear, toYear, fromMagnitude, toMagnitude) {
+    var filtered = filterRecords(records, fromYear, toYear, fromMagnitude, toMagnitude);
+
+    bcConfig.filteredData = filtered;
+    updateEpicenterMap(filtered);
+
+    if (bcConfig.currentState === "년도")
+        updateYearMagnitude(bcConfig, filtered);
+    else if (bcConfig.currentState === "규모")
+        updateMagnitudeChart(bcConfig, filtered);
+    else
+        updateLocationChart(bcConfig, filtered);
+}
+
+function chartTransition(bcConfig) {
+    if (bcConfig.currentState === "년도")
+        updateYearMagnitude(bcConfig, bcConfig.filteredData);
+    else if (bcConfig.currentState === "규모")
+        updateMagnitudeChart(bcConfig, bcConfig.filteredData);
+    else
+        updateLocationChart(bcConfig, bcConfig.filteredData);
 }

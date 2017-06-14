@@ -208,16 +208,84 @@ function updateChart(data, bcConfig, emphasize) {
 
 }
 
+function toPie(bcConfig, filteredData) {
+    bcConfig.svg.selectAll("rect").remove();
+
+    var pie = d3.layout.pie()
+        .value(function (d) {
+            return d[1];
+        });
+
+
+    var g = bcConfig.svg.selectAll(".arc")
+        .data(pie(filteredData))
+        .enter()
+        .append("g")
+        .attr("class", "arc");
+
+    var arc = d3.svg.arc();
+    var color = d3.scale.category20();
+
+    g.append("path")
+        .style("fill", function (d, i) {
+            return color(i);
+        })
+        .data(function () {
+            return pie(filteredData);
+        })
+        .transition()
+        .duration(1000)
+        .tween("arc", arcTween);
+
+    g.append("text")
+        .transition()
+        .duration(1000)
+        .attr("dy", ".31em");
+
+
+
+    var w = 960;
+    var h = 500;
+
+    function arcTween(d) {
+        var path = d3.select(this),
+            text = d3.select(this.nextSibling),
+            x0 = bcConfig.x(d.data[0]),
+            y0 = h - bcConfig.y(d.data[1]);
+
+        text.text(d.data[0]);
+
+        return function (t) {
+            var r = h / 2 / Math.min(1, t + 1e-3),
+                a = Math.cos(t * Math.PI / 2),
+                xx = (-r + (a) * (x0 + bcConfig.x.rangeBand()) + (1 - a) * (w + h) / 2),
+                yy = ((a) * h + (1 - a) * h / 2),
+                f = {
+                    innerRadius: r - bcConfig.x.rangeBand() / (2 - a),
+                    outerRadius: r,
+                    startAngle: a * (Math.PI / 2 - y0 / r) + (1 - a) * d.startAngle,
+                    endAngle: a * (Math.PI / 2) + (1 - a) * d.endAngle
+                };
+
+            path.attr("transform", "translate(" + xx + "," + yy + ")");
+            path.attr("d", arc(f));
+            text.attr("transform", "translate(" + arc.centroid(f) + ")translate(" + xx + "," + yy + ")rotate(" + ((f.startAngle + f.endAngle) / 2 + 3 * Math.PI / 2) * 180 / Math.PI + ")");
+        };
+    }
+}
+
 // update the bars according to the given records.
-function updateYearBarChart(bcConfig, records) {
+function updateYearOccur(bcConfig, records) {
     var data = getYearOccurStatistics(records);
     bcConfig.x_text.text("년도");
     updateChart(data, bcConfig, function(rec, d) {
         return rec.occurred_date.year.toString() === d[0];
     });
+
+    setTimeout(toPie, 2000, bcConfig, data);
 }
 
-function updateMagnitudeChart(bcConfig, records) {
+function updateMagnitudeOccur(bcConfig, records) {
     var data = getMagnitudeOccurStatistics(records);
     bcConfig.x_text.text("규모");
     updateChart(data, bcConfig, function(rec, d) {
@@ -225,7 +293,7 @@ function updateMagnitudeChart(bcConfig, records) {
     });
 }
 
-function updateLocationChart(bcConfig, records) {
+function updateLocationOccur(bcConfig, records) {
     var data = getLocationOccurStatistics(records);
     bcConfig.x_text.text("지역");
     updateChart(data, bcConfig, function(rec, d) {
@@ -257,18 +325,18 @@ function updateTotal(bcConfig, records, fromYear, toYear, fromMagnitude, toMagni
     updateEpicenterMap(filtered);
 
     if (bcConfig.currentState === "년도")
-        updateYearMagnitude(bcConfig, filtered);
+        updateYearOccur(bcConfig, filtered);
     else if (bcConfig.currentState === "규모")
-        updateMagnitudeChart(bcConfig, filtered);
+        updateMagnitudeOccur(bcConfig, filtered);
     else
-        updateLocationChart(bcConfig, filtered);
+        updateLocationOccur(bcConfig, filtered);
 }
 
 function chartTransition(bcConfig) {
     if (bcConfig.currentState === "년도")
-        updateYearMagnitude(bcConfig, bcConfig.filteredData);
+        updateYearOccur(bcConfig, bcConfig.filteredData);
     else if (bcConfig.currentState === "규모")
-        updateMagnitudeChart(bcConfig, bcConfig.filteredData);
+        updateMagnitudeOccur(bcConfig, bcConfig.filteredData);
     else
-        updateLocationChart(bcConfig, bcConfig.filteredData);
+        updateLocationOccur(bcConfig, bcConfig.filteredData);
 }

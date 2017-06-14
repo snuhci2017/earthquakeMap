@@ -13,7 +13,8 @@ emConfig['latitude'] = { top: validGeoRange.latitude.top, bottom: validGeoRange.
 
 // 위-경도 plot을 초기화 한다.
 // 규모별로 dot의 색깔과 크기를 지정하는 함수를 전달할 수 있다 (colorRule & radiusRule, respectively).
-function setupEpicenterMap(colorRule, radiusRule) {
+function setupEpicenterMap(bcConfig, colorRule, radiusRule) {
+    emConfig.bcConfig = bcConfig; // a hack which should be removed later.
     emConfig.svg = d3.select('#epicenter-plot').append('svg')
         .attr('width', emConfig.frame.width)
         .attr('height', emConfig.frame.height);
@@ -75,35 +76,36 @@ function setupEpicenterMap(colorRule, radiusRule) {
         var extent = emConfig.brush.extent();
         var widthRange = [extent[0][0], extent[1][0]];
         var lengthRange = [extent[0][1], extent[1][1]];
-        var magnitudeSum = 0,
-            n = 0;
+        var isBrushCleared = emConfig.brush.empty();
+        var selected = [];
 
         emConfig.svg
             .selectAll('circle')
             .style("visibility", "hidden")
-            .filter((d) => (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
+            .filter((d) => isBrushCleared || (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
                 lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
             .style("visibility", "visible")
-            .each((d) => {
-                n++;
-                magnitudeSum += d.magnitude;
-            });
+            .each((d) => selected.push(d));
 
-        if (n > 0) {
-            d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / n));
-            d3.select('#num-occurrences').text(d3.format('f')(n));
-        }
+        updateBarChart(emConfig.bcConfig, selected);
     }
 
     emConfig.svg
         .append('g')
         .attr('class', 'brush')
-        .call(emConfig.brush)
+        .call(emConfig.brush);
 
 }
 
 function emphasizeRecords(selector) {
+    var extent = emConfig.brush.extent();
+    var widthRange = [extent[0][0], extent[1][0]];
+    var lengthRange = [extent[0][1], extent[1][1]];
+    var isBrushCleared = emConfig.brush.empty();
+
     emConfig.svg.selectAll('circle')
+        .filter((d) => isBrushCleared || (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
+            lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
         .style("visibility", "hidden")
         .filter(selector)
         .style("visibility", "visible");

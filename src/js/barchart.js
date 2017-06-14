@@ -24,21 +24,16 @@ function setupBcConfig() {
 }
 
 // compute statistics (# of occurrences per year) from the given records.
-function getYearStatistics(records, fromYear, toYear) {
+function getYearStatistics(records) {
     var statistics = new Map();
-    if (fromYear > toYear) {
-        return [];
-    } else {
-        for (var year = fromYear; year <= toYear; year++) {
-            if (!statistics.has(year)) {
-                statistics.set(year.toString(), 0);
-            }
-        }
-    }
 
     records.forEach((record) => {
         var year = record.occurred_date.year.toString();
-        statistics.set(year, statistics.get(year) + 1);
+        if (statistics.has(year)) {
+            statistics.set(year, statistics.get(year) + 1);
+        } else {
+            statistics.set(year, 1);
+        }
     });
 
     var data = [];
@@ -203,8 +198,8 @@ function updateChart(data, bcConfig, emphasize) {
 }
 
 // update the bars according to the given records.
-function updateBarChart(bcConfig, records, fromYear, toYear) {
-    var data = getYearStatistics(records, fromYear, toYear);
+function updateBarChart(bcConfig, records) {
+    var data = getYearStatistics(records);
     updateChart(data, bcConfig, function(rec, d) {
         return rec.occurred_date === d[0];
     });

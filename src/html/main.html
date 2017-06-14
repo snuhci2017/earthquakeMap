@@ -9,45 +9,50 @@
 </head>
 
 <body>
+    <header style="height: 100%; width: 100%;">
+        <p id="main-title">
+            Korean Earthquakes
+        </p>
+    </header>
     <div>
-        <!--<nav>
-
-        </nav>-->
         <section style="width: 100%">
             <table id="main-interface">
                 <tr>
-                    <td rowspan="3">
-                        <div id="epicenter-plot"></div>
+                    <td class="chart-background" rowspan="3">
+                        <p id="epicenter-map-title" class="chart-title">Epicenter Map</p>
+                        <div id="epicenter-plot" class="chart"></div>
                     </td>
-                    <td>
-                        <div id="yearly-statistics"></div>
-                    </td>
-                    <td width="450px">
-                        <div id="magnitude-statistics">
-                            <p>규모별 bar 차트</p>
+                    <td class="chart-background">
+                        <p class="chart-title">Statistics by Year/Magnitude/Region</p>
+                        <div id="yearly-statistics" class="chart"></div>
+                        <div id="pie-charts" style="min-height: 50%;">
+                            <p class="chart-title">Pie Charts</p>
                         </div>
                     </td>
                 </tr>
+                <!--<tr>
+                    <td class="chart-background" height="50%">
+                        <p class="chart-title">Pie Charts</p>
+                        <div>Pie 차트들 위치</div>
+                    </td>
+                </tr>-->
                 <tr>
-                    <td height="50%" colspan="2">Pie 차트들 위치</td>
-                </tr>
-                <tr>
-                    <td colspan="3">
+                    <td class="chart-background" colspan="3">
                         <table max-height="200px">
                             <tr>
                                 <td>
-                                    <h3 style="padding: 0px 5px;">발생 연도 범위</h3>
+                                    <h3 style="padding: 0px 10px; text-align: center;">Range of Year</h3>
                                 </td>
                                 <td>
-                                    <div id="year-slider"></div>
+                                    <div id="year-slider" style="padding: 0px 10px;"></div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <h3 style="padding: 0px 5px;">규모 범위</h3>
+                                    <h3 style="padding: 0px 10px; text-align: center;">Range of Magnitude</h3>
                                 </td>
                                 <td>
-                                    <div id="magnitude-slider"></div>
+                                    <div id="magnitude-slider" style="padding: 0px 10px;"></div>
                                 </td>
                             </tr>
                         </table>

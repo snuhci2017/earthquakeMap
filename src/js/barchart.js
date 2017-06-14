@@ -13,7 +13,7 @@ var descriptionBarChart = 'DESCRIPTION: This bar chart shows how the occurrence 
 
 function setupBcConfig() {
     var bcConfig = {};
-    bcConfig['frame'] = { width: 700, height: 350 }; // The size of the frame in HTML doc.
+    bcConfig['frame'] = { width: 900, height: 350 }; // The size of the frame in HTML doc.
     bcConfig['margin'] = { top: 20, right: 20, bottom: 60, left: 50 };
     bcConfig['chart'] = {
         width: bcConfig.frame.width - bcConfig.margin.left - bcConfig.margin.right,

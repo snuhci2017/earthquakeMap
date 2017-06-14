@@ -28,11 +28,11 @@ function readRecordsFromFile(data) {
 // default 와 rules 항목은 필수이며 default 값은 rule 의 범위 밖의 지진 레코드에 대해 부여된다.
 // 하나의 룰은 지진의 규모가 다음 범위인 경우에 매치된다 (from <= M < to)
 var ColorRule = {
-    'default': '#ff0000',
+    'default': '#FF4747',
     'rules': [
-        { 'from': 0, 'to': 3, 'color': '#00cc00' },
-        { 'from': 3, 'to': 4, 'color': '#3333ff' },
-        { 'from': 4, 'to': 5, 'color': '#ff8000' },
+        { 'from': 0, 'to': 3, 'color': '#FF4747' },
+        { 'from': 3, 'to': 4, 'color': '#FF4747' },
+        { 'from': 4, 'to': 5, 'color': '#FF4747' },
     ]
 };
 
@@ -40,11 +40,11 @@ var ColorRule = {
 // default 와 rules 항목은 필수이며 default 값은 rule 의 범위 밖의 지진 레코드에 대해 부여된다.
 // 하나의 룰은 지진의 규모가 다음 범위인 경우에 매치된다 (from <= M < to)
 var RadiusRule = {
-    'default': 6.5,
+    'default': 9.5,
     'rules': [
         { 'from': 0, 'to': 3, 'radius': 3.5 },
-        { 'from': 3, 'to': 4, 'radius': 4.5 },
-        { 'from': 4, 'to': 5, 'radius': 5.5 },
+        { 'from': 3, 'to': 4, 'radius': 5.5 },
+        { 'from': 4, 'to': 5, 'radius': 7.5 },
     ]
 };
 
@@ -73,6 +73,44 @@ function parseAsDate(str) {
 
     return date;
 }
+
+function determineColor(magnitude) {
+    return '#ff4747';
+}
+
+function determineRadius(magnitude) {
+    return (magnitude * 2.0);
+}
+
+/*
+// magnitude에 따라 점의 색깔을 결정한다.
+function determineColor(magnitude) {
+    var color = ColorRule.default;
+
+    for (i = 0; i < ColorRule.rules.length; i++) {
+        var rule = ColorRule.rules[i];
+        if (rule.from <= magnitude && magnitude < rule.to) {
+            color = rule.color;
+        }
+    }
+
+    return color;
+}
+
+// magnitude에 따라 점의 크기를 결정한다.
+function determineRadius(magnitude) {
+    var radius = RadiusRule.default;
+
+    for (i = 0; i < RadiusRule.rules.length; i++) {
+        var rule = RadiusRule.rules[i];
+        if (rule.from <= magnitude && magnitude < rule.to) {
+            radius = rule.radius;
+        }
+    }
+
+    return radius;
+}
+*/
 
 // Jittering을 위한 random number 생성 함수
 function getRandom(min, max) {

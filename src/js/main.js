@@ -12,7 +12,7 @@ $(document).ready(function() {
     var bcConfig = setupBcConfig();
 
     console.log(filtered);
-    setupEpicenterMap(ColorRule, RadiusRule);
+    setupEpicenterMap(determineColor, determineRadius);
     setupBarChart(bcConfig);
     updateEpicenterMap(filtered);
     updateBarChart(bcConfig, filtered, crtFromYear, crtToYear);
@@ -20,27 +20,27 @@ $(document).ready(function() {
     // slider 가 변경 될시 update function 을 부른다
     d3.select('#year-slider').call(
         d3.slider()
-            .axis(true).min(1978).max(2017).step(1)
-            .value([crtFromYear, crtToYear])
-            .on("slide", function(evt, value) {
-                // 현재 년도를 저장해 놓는다
-                crtFromYear = value[0];
-                crtToYear = value[1];
-                updateTotal(bcConfig, records, crtFromYear, crtToYear,
-                    crtFromMagnitude, crtToMagnitude);
-            }));
+        .axis(true).min(1978).max(2017).step(1)
+        .value([crtFromYear, crtToYear])
+        .on("slide", function(evt, value) {
+            // 현재 년도를 저장해 놓는다
+            crtFromYear = value[0];
+            crtToYear = value[1];
+            updateTotal(bcConfig, records, crtFromYear, crtToYear,
+                crtFromMagnitude, crtToMagnitude);
+        }));
 
     d3.select('#magnitude-slider').call(
         d3.slider()
-            .axis(true).min(1).max(6)
-            .value([crtFromMagnitude, crtToMagnitude])
-            .on("slide", function(evt, value) {
-                // 현재 규모를 저장해 놓는다
-                crtFromMagnitude = value[0];
-                crtToMagnitude = value[1];
-                updateTotal(bcConfig, records, crtFromYear, crtToYear,
-                    crtFromMagnitude, crtToMagnitude);
-            }));
+        .axis(true).min(1).max(6)
+        .value([crtFromMagnitude, crtToMagnitude])
+        .on("slide", function(evt, value) {
+            // 현재 규모를 저장해 놓는다
+            crtFromMagnitude = value[0];
+            crtToMagnitude = value[1];
+            updateTotal(bcConfig, records, crtFromYear, crtToYear,
+                crtFromMagnitude, crtToMagnitude);
+        }));
 });
 
 /**

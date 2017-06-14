@@ -12,7 +12,7 @@ emConfig['longitude'] = { left: 122, right: 131 };
 emConfig['latitude'] = { top: 43, bottom: 32.8 };
 
 // 위-경도 plot을 초기화 한다.
-// 규모별로 dot의 색깔과 크기를 지정하는 룰을 전달할 수 있다 (colorRule & radiusRule, respectively).
+// 규모별로 dot의 색깔과 크기를 지정하는 함수를 전달할 수 있다 (colorRule & radiusRule, respectively).
 function setupEpicenterMap(colorRule, radiusRule) {
     emConfig.svg = d3.select('#epicenter-plot').append('svg')
         .attr('width', emConfig.frame.width)
@@ -104,12 +104,12 @@ function setupEpicenterMap(colorRule, radiusRule) {
 
 function emphasizeRecords(selector) {
     emConfig.svg.selectAll('circle')
-        .style('opacity', 0.2)
+        .style("visibility", "hidden")
         .filter(selector)
-        .style('opacity', 1);
+        .style("visibility", "visible");
 }
 
-// 주어진 레코드를 위-경도 plot에 점으로 출력한다. 점의 킉와 색상은 초기화 시 설정한 룰들을 이용한다.
+// 주어진 레코드를 위-경도 plot에 점으로 출력한다. 점의 크기와 색상은 초기화 시 설정한 함수들(colorRule & radiusRule)을 이용한다.
 function updateEpicenterMap(records) {
     var circles = emConfig.svg
         .selectAll('circle')
@@ -122,20 +122,25 @@ function updateEpicenterMap(records) {
         .style("visibility", "hidden")
         .text("a simple tooltip");
 
-    circles.exit().transition().duration(200).remove();
+    circles.exit().transition().duration(200)
+        .attr('r', (d) => 0)
+        .attr('cx', (d) => (emConfig.plot.width + emConfig.margin.left) / 2)
+        .attr('cy', (d) => (emConfig.plot.height + emConfig.margin.bottom) / 2)
+        .remove();
 
     circles.transition().duration(200)
-        .attr('r', (d) => determineRadius(d.magnitude, emConfig.radiusRule))
+        .attr('r', (d) => emConfig.radiusRule(d.magnitude))
         .attr('cx', (d) => emConfig.x(d.longitude.value))
         .attr('cy', (d) => emConfig.y(d.latitude.value))
-        .style('fill', (d) => determineColor(d.magnitude, emConfig.colorRule));
+        .style('fill', (d) => emConfig.colorRule(d.magnitude))
+        .style('stroke', 'red')
+        .style('fill-opacity', 0.5);
 
     circles.enter()
         .append('circle')
-        .attr('r', (d) => determineRadius(d.magnitude, emConfig.radiusRule))
-        .attr('cx', (d) => emConfig.x(d.longitude.value))
-        .attr('cy', (d) => emConfig.y(d.latitude.value))
-        .style('fill', (d) => determineColor(d.magnitude, emConfig.colorRule))
+        .attr('r', (d) => 0)
+        .attr('cx', (d) => (emConfig.plot.width + emConfig.margin.left) / 2)
+        .attr('cy', (d) => (emConfig.plot.height + emConfig.margin.bottom) / 2)
         .on('mouseover', function() {
             tooltip.style("visibility", "visible");
         })
@@ -153,33 +158,11 @@ function updateEpicenterMap(records) {
         })
         .on("mouseout", function() {
             tooltip.style("visibility", "hidden");
-        });
-}
-
-// magnitude 에 따라 점의 색깔을 결정한다.
-function determineColor(magnitude, colorRule) {
-    var color = colorRule.default;
-
-    for (i = 0; i < colorRule.rules.length; i++) {
-        var rule = colorRule.rules[i];
-        if (rule.from <= magnitude && magnitude < rule.to) {
-            color = rule.color;
-        }
-    }
-
-    return color;
-}
-
-// magnitude 에 따라 점의 크기를 결정한다.
-function determineRadius(magnitude, radiusRule) {
-    var radius = radiusRule.default;
-
-    for (i = 0; i < radiusRule.rules.length; i++) {
-        var rule = radiusRule.rules[i];
-        if (rule.from <= magnitude && magnitude < rule.to) {
-            radius = rule.radius;
-        }
-    }
-
-    return radius;
+        }).transition().duration(200)
+        .attr('r', (d) => emConfig.radiusRule(d.magnitude))
+        .attr('cx', (d) => emConfig.x(d.longitude.value))
+        .attr('cy', (d) => emConfig.y(d.latitude.value))
+        .style('fill', (d) => emConfig.colorRule(d.magnitude))
+        .style('stroke', 'red')
+        .style('fill-opacity', 0.5);
 }

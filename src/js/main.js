@@ -15,11 +15,16 @@ $(document).ready(function() {
 
     console.log(filtered);
     setupEpicenterMap(bcConfigs, determineColor, determineRadius);
+
+    pieChart("#pie-chart", getMagnitudeOccurStatistics(filtered));
+
     bcConfigs.forEach((config) => {
         setupBarChart(config);
-        updateTotal(config, records, crtFromYear, crtToYear,
+        updateTotal(config, filtered, crtFromYear, crtToYear,
             crtFromMagnitude, crtToMagnitude);
     });
+
+
 
     // slider 가 변경 될시 update function 을 부른다
     d3.select('#year-slider').call(

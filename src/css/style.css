@@ -105,3 +105,12 @@ svg {
 .brush rect {
     opacity: 0.2;
 }
+
+.arc text {
+    font: 18px sans-serif;
+    text-anchor: middle;
+}
+
+.arc path {
+    stroke: #fff;
+}

@@ -82,6 +82,7 @@ function getRange(magnitude) {
 }
 
 function getMagnitudeOccurStatistics(records) {
+
     return getOccurStatistics(records, function(record) {
         return getRange(record.magnitude);
     });
@@ -286,12 +287,7 @@ function updateYearOccur(bcConfig, records) {
     // setTimeout(toPie, 2000, bcConfig, data);
 }
 
-function updateMagnitudeOccur(bcConfig, records) {
-    var data = getMagnitudeOccurStatistics(records);
-    updateChart(data, bcConfig, function(rec, d) {
-        return getRange(rec.magnitude) === d[0];
-    });
-}
+function updateMagnitudeOccur(bcConfig, records) {}
 
 function updateLocationOccur(bcConfig, records) {
     var data = getLocationOccurStatistics(records);
@@ -326,6 +322,8 @@ function updateTotal(bcConfig, records, fromYear, toYear, fromMagnitude, toMagni
         updateYearOccur(bcConfig, bcConfig.filteredData);
     else if (bcConfig.id === "#regional-statistics")
         updateLocationOccur(bcConfig, bcConfig.filteredData);
+
+    updatePieChart(getMagnitudeOccurStatistics(filtered));
 }
 
 function chartTransition(bcConfig) {
@@ -341,4 +339,6 @@ function updateChartFromBrush(bcConfig, brushedData) {
         updateYearOccur(bcConfig, bcConfig.filteredData);
     else if (bcConfig.id === "#regional-statistics")
         updateLocationOccur(bcConfig, bcConfig.filteredData);
+
+    updatePieChart(getMagnitudeOccurStatistics(brushedData));
 }

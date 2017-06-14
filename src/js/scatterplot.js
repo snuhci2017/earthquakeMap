@@ -65,12 +65,11 @@ function setupEpicenterMap(bcConfig, colorRule, radiusRule) {
         .text('위도')
         .attr('font-size', 18);
 
-    // TODO: 브러쉬는 일시적으로 비활성화 (개선 필요)
     emConfig.brush = d3.svg.brush()
         .x(emConfig.x)
         .y(emConfig.y)
         .on('brush', updateBrush)
-        .on('brushend', updateBrush)
+        .on('brushend', updateBrush);
 
     emConfig.svg
         .append('g')
@@ -108,7 +107,7 @@ function updateBrush() {
         .style('fill-opacity', 0.5)
         .each((d) => selected.push(d));
 
-    updateBarChart(emConfig.bcConfig, selected);
+    updateChartFromBrush(emConfig.bcConfig, selected);
 }
 
 function emphasizeRecords(selector) {
@@ -135,8 +134,6 @@ function isInsideBrush(brush, d) {
 
 // 주어진 레코드를 위-경도 plot에 점으로 출력한다. 점의 크기와 색상은 초기화 시 설정한 함수들(colorRule & radiusRule)을 이용한다.
 function updateEpicenterMap(records) {
-
-
     var isBrushCleared = emConfig.brush.empty();
     var selected = [];
 
@@ -206,5 +203,5 @@ function updateEpicenterMap(records) {
         .style('fill-opacity', 0.5)
         .each((d) => selected.push(d));
 
-    updateBarChart(emConfig.bcConfig, selected);
+    return selected;
 }

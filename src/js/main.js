@@ -14,8 +14,8 @@ $(document).ready(function() {
     console.log(filtered);
     setupEpicenterMap(bcConfig, determineColor, determineRadius);
     setupBarChart(bcConfig);
-    updateEpicenterMap(filtered);
-    //updateBarChart(bcConfig, filtered);
+    updateTotal(bcConfig, records, crtFromYear, crtToYear,
+        crtFromMagnitude, crtToMagnitude);
 
     // slider 가 변경 될시 update function 을 부른다
     d3.select('#year-slider').call(
@@ -43,18 +43,29 @@ $(document).ready(function() {
             updateTotal(bcConfig, records, crtFromYear, crtToYear,
                 crtFromMagnitude, crtToMagnitude);
         }));
-});
 
-/**
- * data 를 filtering 해서 원하는 지진만 표시한다
- * @param records 전체 지진 records
- * @param fromYear 시작 년도
- * @param toYear 끝 년도
- * @param fromMagnitude 시작 규모
- * @param toMagnitude 끝 규모
- */
-function updateTotal(bcConfig, records, fromYear, toYear, fromMagnitude, toMagnitude) {
-    var filtered = filterRecords(records, fromYear, toYear, fromMagnitude, toMagnitude);
-    updateEpicenterMap(filtered);
-    //updateBarChart(bcConfig, filtered);
-}
+    var shapeData = ["년도", "규모", "지역"],
+        j = 0;  // Choose the rectangle as default
+
+    // Create the shape selectors
+    d3.select('#bar-chart-title').append("form")
+        .selectAll("label")
+        .data(shapeData)
+        .enter()
+        .append("label")
+        .text(function(d) {return d;})
+        .insert("input")
+        .attr({
+            type: "radio",
+            class: "shape",
+            name: "mode",
+            value: function(d, i) {return i;}
+        })
+        .property("checked", function(d, i) {
+            return i === j;
+        })
+        .on("change", function(d) {
+            bcConfig.currentState = d;
+            chartTransition(bcConfig);
+        });
+});

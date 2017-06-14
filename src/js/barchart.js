@@ -242,8 +242,6 @@ function toPie(bcConfig, filteredData) {
         .duration(1000)
         .attr("dy", ".31em");
 
-
-
     var w = 960;
     var h = 500;
 
@@ -278,11 +276,12 @@ function toPie(bcConfig, filteredData) {
 function updateYearOccur(bcConfig, records) {
     var data = getYearOccurStatistics(records);
     bcConfig.x_text.text("년도");
+
     updateChart(data, bcConfig, function(rec, d) {
         return rec.occurred_date.year.toString() === d[0];
     });
 
-    setTimeout(toPie, 2000, bcConfig, data);
+    // setTimeout(toPie, 2000, bcConfig, data);
 }
 
 function updateMagnitudeOccur(bcConfig, records) {
@@ -321,15 +320,14 @@ function updateYearMagnitude(bcConfig, records) {
 function updateTotal(bcConfig, records, fromYear, toYear, fromMagnitude, toMagnitude) {
     var filtered = filterRecords(records, fromYear, toYear, fromMagnitude, toMagnitude);
 
-    bcConfig.filteredData = filtered;
-    updateEpicenterMap(filtered);
+    bcConfig.filteredData = updateEpicenterMap(filtered);
 
     if (bcConfig.currentState === "년도")
-        updateYearOccur(bcConfig, filtered);
+        updateYearOccur(bcConfig, bcConfig.filteredData);
     else if (bcConfig.currentState === "규모")
-        updateMagnitudeOccur(bcConfig, filtered);
+        updateMagnitudeOccur(bcConfig, bcConfig.filteredData);
     else
-        updateLocationOccur(bcConfig, filtered);
+        updateLocationOccur(bcConfig, bcConfig.filteredData);
 }
 
 function chartTransition(bcConfig) {
@@ -339,4 +337,14 @@ function chartTransition(bcConfig) {
         updateMagnitudeOccur(bcConfig, bcConfig.filteredData);
     else
         updateLocationOccur(bcConfig, bcConfig.filteredData);
+}
+
+function updateChartFromBrush(bcConfig, brushedData) {
+    bcConfig.filteredData = brushedData;
+    if (bcConfig.currentState === "년도")
+        updateYearOccur(bcConfig, brushedData);
+    else if (bcConfig.currentState === "규모")
+        updateMagnitudeOccur(bcConfig, brushedData);
+    else
+        updateLocationOccur(bcConfig, brushedData);
 }

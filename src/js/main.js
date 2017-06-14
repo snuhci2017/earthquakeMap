@@ -12,7 +12,7 @@ $(document).ready(function() {
     var bcConfig = setupBcConfig();
 
     console.log(filtered);
-    setupEpicenterMap(determineColor, determineRadius);
+    setupEpicenterMap(bcConfig, determineColor, determineRadius);
     setupBarChart(bcConfig);
     updateTotal(bcConfig, records, crtFromYear, crtToYear,
         crtFromMagnitude, crtToMagnitude);
@@ -26,6 +26,7 @@ $(document).ready(function() {
             // 현재 년도를 저장해 놓는다
             crtFromYear = value[0];
             crtToYear = value[1];
+            //clearBrush();
             updateTotal(bcConfig, records, crtFromYear, crtToYear,
                 crtFromMagnitude, crtToMagnitude);
         }));
@@ -38,6 +39,7 @@ $(document).ready(function() {
             // 현재 규모를 저장해 놓는다
             crtFromMagnitude = value[0];
             crtToMagnitude = value[1];
+            //clearBrush();
             updateTotal(bcConfig, records, crtFromYear, crtToYear,
                 crtFromMagnitude, crtToMagnitude);
         }));

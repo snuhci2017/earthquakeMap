@@ -8,12 +8,13 @@ var emConfig = {};
 emConfig['frame'] = { 'width': 605, 'height': 850 }; // The size of the frame in HTML doc.
 emConfig['plot'] = { 'width': 555, 'height': 800 };
 emConfig['margin'] = { left: 50, bottom: 50 };
-emConfig['longitude'] = { left: 122, right: 131 };
-emConfig['latitude'] = { top: 43, bottom: 32.8 };
+emConfig['longitude'] = { left: validGeoRange.longitude.left, right: validGeoRange.longitude.right };
+emConfig['latitude'] = { top: validGeoRange.latitude.top, bottom: validGeoRange.latitude.bottom };
 
 // 위-경도 plot을 초기화 한다.
 // 규모별로 dot의 색깔과 크기를 지정하는 함수를 전달할 수 있다 (colorRule & radiusRule, respectively).
-function setupEpicenterMap(colorRule, radiusRule) {
+function setupEpicenterMap(bcConfig, colorRule, radiusRule) {
+    emConfig.bcConfig = bcConfig; // a hack which should be removed later.
     emConfig.svg = d3.select('#epicenter-plot').append('svg')
         .attr('width', emConfig.frame.width)
         .attr('height', emConfig.frame.height);
@@ -64,53 +65,78 @@ function setupEpicenterMap(colorRule, radiusRule) {
         .text('위도')
         .attr('font-size', 18);
 
-    // TODO: 브러쉬는 일시적으로 비활성화 (개선 필요)
-    // emConfig.brush = d3.svg.brush()
-    //     .x(emConfig.x)
-    //     .y(emConfig.y)
-    //     .on('brush', update)
-    //     .on('brushend', update)
+    emConfig.brush = d3.svg.brush()
+        .x(emConfig.x)
+        .y(emConfig.y)
+        .on('brush', updateBrush)
+        .on('brushend', updateBrush);
 
-    // function update() {
-    //     var extent = emConfig.brush.extent();
-    //     var widthRange = [extent[0][0], extent[1][0]];
-    //     var lengthRange = [extent[0][1], extent[1][1]];
-    //     var magnitudeSum = 0,
-    //         n = 0;
-
-    //     emConfig.svg
-    //         .selectAll('circle')
-    //         .style('opacity', 0.5)
-    //         .filter((d) => (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
-    //             lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]))
-    //         .style('opacity', 1)
-    //         .each((d) => {
-    //             n++;
-    //             magnitudeSum += d.magnitude;
-    //         });
-
-    //     if (n > 0) {
-    //         d3.select('#mean-magnitude').text(d3.format('.2f')(magnitudeSum / n));
-    //         d3.select('#num-occurrences').text(d3.format('f')(n));
-    //     }
-    // }
-
-    // emConfig.svg
-    //     .append('g')
-    //     .attr('class', 'brush')
-    //     .call(emConfig.brush)
+    emConfig.svg
+        .append('g')
+        .attr('class', 'brush')
+        .call(emConfig.brush);
 
 }
 
+function clearBrush() {
+    var selected = [];
+    console.log(emConfig.brush.extent());
+    emConfig.brush.clear();
+    emConfig.brush.extent([
+        [0, 0],
+        [0, 0]
+    ]);
+    console.log(emConfig.brush.extent());
+    emConfig.svg.select(".brush").call(emConfig.brush);
+
+    updateBrush();
+}
+
+function updateBrush() {
+    var extent = emConfig.brush.extent();
+    var widthRange = [extent[0][0], extent[1][0]];
+    var lengthRange = [extent[0][1], extent[1][1]];
+    var isBrushCleared = emConfig.brush.empty();
+    var selected = [];
+
+    emConfig.svg
+        .selectAll('circle')
+        .style('opacity', 0.22)
+        .filter((d) => isBrushCleared || isInsideBrush(emConfig.brush, d))
+        .style('opacity', 1)
+        .style('fill-opacity', 0.5)
+        .each((d) => selected.push(d));
+
+    updateChartFromBrush(emConfig.bcConfig, selected);
+}
+
 function emphasizeRecords(selector) {
+    var extent = emConfig.brush.extent();
+    var widthRange = [extent[0][0], extent[1][0]];
+    var lengthRange = [extent[0][1], extent[1][1]];
+    var isBrushCleared = emConfig.brush.empty();
+
     emConfig.svg.selectAll('circle')
-        .style("visibility", "hidden")
+        .filter((d) => isBrushCleared || isInsideBrush(emConfig.brush, d))
+        .style('opacity', 0.22)
         .filter(selector)
-        .style("visibility", "visible");
+        .style('opacity', 1)
+        .style('fill-opacity', 0.5);
+}
+
+function isInsideBrush(brush, d) {
+    var extent = brush.extent();
+    var widthRange = [extent[0][0], extent[1][0]];
+    var lengthRange = [extent[0][1], extent[1][1]];
+    return (widthRange[0] <= d.longitude.value && d.longitude.value <= widthRange[1] &&
+        lengthRange[0] <= d.latitude.value && d.latitude.value <= lengthRange[1]);
 }
 
 // 주어진 레코드를 위-경도 plot에 점으로 출력한다. 점의 크기와 색상은 초기화 시 설정한 함수들(colorRule & radiusRule)을 이용한다.
 function updateEpicenterMap(records) {
+    var isBrushCleared = emConfig.brush.empty();
+    var selected = [];
+
     var circles = emConfig.svg
         .selectAll('circle')
         .data(records, (d) => d.id);
@@ -134,7 +160,11 @@ function updateEpicenterMap(records) {
         .attr('cy', (d) => emConfig.y(d.latitude.value))
         .style('fill', (d) => emConfig.colorRule(d.magnitude))
         .style('stroke', 'red')
-        .style('fill-opacity', 0.5);
+        .style('opacity', 0.22)
+        .filter((d) => (isBrushCleared || isInsideBrush(emConfig.brush, d)))
+        .style('opacity', 1)
+        .style('fill-opacity', 0.5)
+        .each((d) => selected.push(d));
 
     circles.enter()
         .append('circle')
@@ -164,5 +194,13 @@ function updateEpicenterMap(records) {
         .attr('cy', (d) => emConfig.y(d.latitude.value))
         .style('fill', (d) => emConfig.colorRule(d.magnitude))
         .style('stroke', 'red')
-        .style('fill-opacity', 0.5);
+        .style('opacity', 0.22)
+        .filter(function(d) {
+            return (isBrushCleared || isInsideBrush(emConfig.brush, d));
+        })
+        .style('opacity', 1)
+        .style('fill-opacity', 0.5)
+        .each((d) => selected.push(d));
+
+    return selected;
 }

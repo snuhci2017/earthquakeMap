@@ -186,8 +186,9 @@ function updateEpicenterMap(records) {
 
             tooltip.text("시간: " + date + "\n" +
                 "위치: " + d.latitude.value.toFixed(3) + d.latitude.direction + ", " +
-                d.longitude.value.toFixed(3) + d.longitude.direction + "\n규모: " + d.magnitude);
-            tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
+                d.longitude.value.toFixed(3) + d.longitude.direction + " 규모: " + d.magnitude);
+            tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
+                .style("background-color", "skyblue").style("font-size", "18px");
         })
         .on("mouseout", function() {
             tooltip.style("visibility", "hidden");

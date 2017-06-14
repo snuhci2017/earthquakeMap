@@ -11,10 +11,12 @@ var descriptionBarChart = 'DESCRIPTION: This bar chart shows how the occurrence 
 //     'height': bcConfig.frame.height - bcConfig.margin.top - bcConfig.margin.bottom
 // };
 
-function setupBcConfig() {
+function setupBcConfig(id, label_x, frame) {
     var bcConfig = {};
-    bcConfig['frame'] = { width: 900, height: 350 }; // The size of the frame in HTML doc.
-    bcConfig['margin'] = { top: 20, right: 20, bottom: 60, left: 50 };
+    bcConfig['id'] = id;
+    bcConfig['label_x'] = label_x;
+    bcConfig['frame'] = { width: frame.width, height: frame.height }; // The size of the frame in HTML doc.
+    bcConfig['margin'] = { top: 20, right: 20, bottom: 80, left: 50 };
     bcConfig['chart'] = {
         width: bcConfig.frame.width - bcConfig.margin.left - bcConfig.margin.right,
         height: bcConfig.frame.height - bcConfig.margin.top - bcConfig.margin.bottom
@@ -105,9 +107,8 @@ function setupBarChart(bcConfig) {
     bcConfig.y.domain([0, 0]);
     bcConfig.axis_x = d3.svg.axis().scale(bcConfig.x).orient('bottom');
     bcConfig.axis_y = d3.svg.axis().scale(bcConfig.y).orient('left').ticks(10);
-    bcConfig.currentState = "년도";
 
-    bcConfig.svg = d3.select('#yearly-statistics').append('svg')
+    bcConfig.svg = d3.select(bcConfig.id).append('svg')
         .attr('width', bcConfig.frame.width)
         .attr('height', bcConfig.frame.height)
         .append('g')
@@ -119,20 +120,22 @@ function setupBarChart(bcConfig) {
         .call(bcConfig.axis_x)
         .selectAll('text')
         .style('text-anchor', 'end')
+        .style("font-size", "34px")
         .attr('dx', '-.8em')
         .attr('dy', '-.55em')
         .attr('transform', 'rotate(-90)');
 
-    bcConfig.x_text = bcConfig.svg.append('text') // text label for the X axis
-        .attr('transform', translate((bcConfig.chart.width / 2), (bcConfig.chart.height + bcConfig.margin.bottom)))
+    bcConfig.svg.append('text') // text label for the X axis
+        .attr('transform', translate((bcConfig.chart.width / 2), (bcConfig.chart.height + bcConfig.margin.bottom - 2)))
         .style('text-anchor', 'middle')
-        .text('년도')
-        .attr('font-size', 20);
+        .text(bcConfig.label_x)
+        .style('font-size', '20px');
 
     bcConfig.svg.append('g') // bcConfig the Y axis
         .attr('class', 'y axis')
         .call(bcConfig.axis_y)
         .append('text')
+        .style("font-size", "34px")
         .attr('transform', 'rotate(-90)')
         .attr('dy', '.71em');
 
@@ -143,7 +146,7 @@ function setupBarChart(bcConfig) {
         .attr('dy', '1em')
         .style('text-anchor', 'middle')
         .text('발생 횟수')
-        .attr('font-size', 20);
+        .style("font-size", "20px");
 }
 
 function updateChart(data, bcConfig, emphasize) {
@@ -213,7 +216,7 @@ function toPie(bcConfig, filteredData) {
     bcConfig.svg.selectAll("rect").remove();
 
     var pie = d3.layout.pie()
-        .value(function (d) {
+        .value(function(d) {
             return d[1];
         });
 
@@ -228,10 +231,10 @@ function toPie(bcConfig, filteredData) {
     var color = d3.scale.category20();
 
     g.append("path")
-        .style("fill", function (d, i) {
+        .style("fill", function(d, i) {
             return color(i);
         })
-        .data(function () {
+        .data(function() {
             return pie(filteredData);
         })
         .transition()
@@ -254,7 +257,7 @@ function toPie(bcConfig, filteredData) {
 
         text.text(d.data[0]);
 
-        return function (t) {
+        return function(t) {
             var r = h / 2 / Math.min(1, t + 1e-3),
                 a = Math.cos(t * Math.PI / 2),
                 xx = (-r + (a) * (x0 + bcConfig.x.rangeBand()) + (1 - a) * (w + h) / 2),
@@ -276,8 +279,6 @@ function toPie(bcConfig, filteredData) {
 // update the bars according to the given records.
 function updateYearOccur(bcConfig, records) {
     var data = getYearOccurStatistics(records);
-    bcConfig.x_text.text("년도");
-
     updateChart(data, bcConfig, function(rec, d) {
         return rec.occurred_date.year.toString() === d[0];
     });
@@ -287,7 +288,6 @@ function updateYearOccur(bcConfig, records) {
 
 function updateMagnitudeOccur(bcConfig, records) {
     var data = getMagnitudeOccurStatistics(records);
-    bcConfig.x_text.text("규모");
     updateChart(data, bcConfig, function(rec, d) {
         return getRange(rec.magnitude) === d[0];
     });
@@ -295,7 +295,6 @@ function updateMagnitudeOccur(bcConfig, records) {
 
 function updateLocationOccur(bcConfig, records) {
     var data = getLocationOccurStatistics(records);
-    bcConfig.x_text.text("지역");
     updateChart(data, bcConfig, function(rec, d) {
         return rec.location === d[0];
     })
@@ -323,29 +322,23 @@ function updateTotal(bcConfig, records, fromYear, toYear, fromMagnitude, toMagni
 
     bcConfig.filteredData = updateEpicenterMap(filtered);
 
-    if (bcConfig.currentState === "년도")
+    if (bcConfig.id === "#yearly-statistics")
         updateYearOccur(bcConfig, bcConfig.filteredData);
-    else if (bcConfig.currentState === "규모")
-        updateMagnitudeOccur(bcConfig, bcConfig.filteredData);
-    else
+    else if (bcConfig.id === "#regional-statistics")
         updateLocationOccur(bcConfig, bcConfig.filteredData);
 }
 
 function chartTransition(bcConfig) {
-    if (bcConfig.currentState === "년도")
+    if (bcConfig.id === "#yearly-statistics")
         updateYearOccur(bcConfig, bcConfig.filteredData);
-    else if (bcConfig.currentState === "규모")
-        updateMagnitudeOccur(bcConfig, bcConfig.filteredData);
-    else
+    else if (bcConfig.id === "#regional-statistics")
         updateLocationOccur(bcConfig, bcConfig.filteredData);
 }
 
 function updateChartFromBrush(bcConfig, brushedData) {
     bcConfig.filteredData = brushedData;
-    if (bcConfig.currentState === "년도")
-        updateYearOccur(bcConfig, brushedData);
-    else if (bcConfig.currentState === "규모")
-        updateMagnitudeOccur(bcConfig, brushedData);
-    else
-        updateLocationOccur(bcConfig, brushedData);
+    if (bcConfig.id === "#yearly-statistics")
+        updateYearOccur(bcConfig, bcConfig.filteredData);
+    else if (bcConfig.id === "#regional-statistics")
+        updateLocationOccur(bcConfig, bcConfig.filteredData);
 }

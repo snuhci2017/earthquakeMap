@@ -1,7 +1,7 @@
 // document 가 준비되면 update function 을 부른다
 $(document).ready(function() {
-    var crtFromYear = 2000;
-    var crtToYear = 2005;
+    var crtFromYear = 2010;
+    var crtToYear = 2014;
     var crtFromMagnitude = 1;
     var crtToMagnitude = 6;
 
@@ -9,13 +9,17 @@ $(document).ready(function() {
     var filtered = filterRecords(records, crtFromYear, crtToYear,
         crtFromMagnitude, crtToMagnitude);
 
-    var bcConfig = setupBcConfig();
+    var bcConfigs = [];
+    bcConfigs.push(setupBcConfig("#yearly-statistics", "년도", { 'width': 1350, 'height': 350 }));
+    bcConfigs.push(setupBcConfig("#regional-statistics", "지역", { 'width': 950, 'height': 350 }))
 
     console.log(filtered);
-    setupEpicenterMap(bcConfig, determineColor, determineRadius);
-    setupBarChart(bcConfig);
-    updateTotal(bcConfig, records, crtFromYear, crtToYear,
-        crtFromMagnitude, crtToMagnitude);
+    setupEpicenterMap(bcConfigs, determineColor, determineRadius);
+    bcConfigs.forEach((config) => {
+        setupBarChart(config);
+        updateTotal(config, records, crtFromYear, crtToYear,
+            crtFromMagnitude, crtToMagnitude);
+    });
 
     // slider 가 변경 될시 update function 을 부른다
     d3.select('#year-slider').call(
@@ -27,8 +31,8 @@ $(document).ready(function() {
             crtFromYear = value[0];
             crtToYear = value[1];
             //clearBrush();
-            updateTotal(bcConfig, records, crtFromYear, crtToYear,
-                crtFromMagnitude, crtToMagnitude);
+            bcConfigs.forEach((config) => updateTotal(config, records, crtFromYear, crtToYear,
+                crtFromMagnitude, crtToMagnitude));
         }));
 
     d3.select('#magnitude-slider').call(
@@ -40,32 +44,32 @@ $(document).ready(function() {
             crtFromMagnitude = value[0];
             crtToMagnitude = value[1];
             //clearBrush();
-            updateTotal(bcConfig, records, crtFromYear, crtToYear,
-                crtFromMagnitude, crtToMagnitude);
+            bcConfigs.forEach((config) => updateTotal(config, records, crtFromYear, crtToYear,
+                crtFromMagnitude, crtToMagnitude));
         }));
 
-    var shapeData = ["년도", "규모", "지역"],
-        j = 0;  // Choose the rectangle as default
+    // var shapeData = ["년도", "규모", "지역"],
+    //     j = 0; // Choose the rectangle as default
 
     // Create the shape selectors
-    d3.select('#bar-chart-title').append("form")
-        .selectAll("label")
-        .data(shapeData)
-        .enter()
-        .append("label")
-        .text(function(d) {return d;})
-        .insert("input")
-        .attr({
-            type: "radio",
-            class: "shape",
-            name: "mode",
-            value: function(d, i) {return i;}
-        })
-        .property("checked", function(d, i) {
-            return i === j;
-        })
-        .on("change", function(d) {
-            bcConfig.currentState = d;
-            chartTransition(bcConfig);
-        });
+    // d3.select('#bar-chart-title').append("form")
+    //     .selectAll("label")
+    //     .data(shapeData)
+    //     .enter()
+    //     .append("label")
+    //     .text(function(d) { return d; })
+    //     .insert("input")
+    //     .attr({
+    //         type: "radio",
+    //         class: "shape",
+    //         name: "mode",
+    //         value: function(d, i) { return i; }
+    //     })
+    //     .property("checked", function(d, i) {
+    //         return i === j;
+    //     })
+    //     .on("change", function(d) {
+    //         bcConfig.currentState = d;
+    //         chartTransition(bcConfig);
+    //     });
 });

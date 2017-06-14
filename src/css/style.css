@@ -94,6 +94,10 @@ svg {
     shape-rendering: crispEdges;
 }
 
+.axis text {
+    font-size: 16px;
+}
+
 .dot {
     stroke: #000;
 }

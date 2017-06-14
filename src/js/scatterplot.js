@@ -13,8 +13,8 @@ emConfig['latitude'] = { top: validGeoRange.latitude.top, bottom: validGeoRange.
 
 // 위-경도 plot을 초기화 한다.
 // 규모별로 dot의 색깔과 크기를 지정하는 함수를 전달할 수 있다 (colorRule & radiusRule, respectively).
-function setupEpicenterMap(bcConfig, colorRule, radiusRule) {
-    emConfig.bcConfig = bcConfig; // a hack which should be removed later.
+function setupEpicenterMap(bcConfigs, colorRule, radiusRule) {
+    emConfig.bcConfigs = bcConfigs; // a hack which should be removed later.
     emConfig.svg = d3.select('#epicenter-plot').append('svg')
         .attr('width', emConfig.frame.width)
         .attr('height', emConfig.frame.height);
@@ -107,7 +107,7 @@ function updateBrush() {
         .style('fill-opacity', 0.5)
         .each((d) => selected.push(d));
 
-    updateChartFromBrush(emConfig.bcConfig, selected);
+    emConfig.bcConfigs.forEach((config) => updateChartFromBrush(config, selected));;
 }
 
 function emphasizeRecords(selector) {

@@ -9,6 +9,13 @@ function readRecordsFromFile(data) {
         new_record['occurred_date'] = parseAsDate(record['occurred_date']);
         new_record['longitude'] = parseAsSingleCoordinate(record['longitude']);
         new_record['latitude'] = parseAsSingleCoordinate(record['latitude']);
+        var location = record['location'].split(" ");
+
+        if (location[0] === '북한')
+            new_record['location'] = location[1];
+        else
+            new_record['location'] = location[0];
+
         new_record['id'] = id++;
         if (!isNaN(new_record.longitude.value))
             records.push(new_record);

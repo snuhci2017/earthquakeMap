@@ -1,6 +1,6 @@
 var pieConfig = {};
 pieConfig['colorVec'] = ["#2c7bb6", "#1a9641", "#fdae61", "#d7191c"];
-pieConfig['demension'] = { 'width': 250, 'height': 250 };
+pieConfig['demension'] = { 'width': 350, 'height': 350 };
 pieConfig.demension['radius'] = Math.min(pieConfig.demension.width, pieConfig.demension.height) / 2;
 
 function pieChart(id, statistics) {

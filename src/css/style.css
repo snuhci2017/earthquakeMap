@@ -77,10 +77,10 @@ div#epicenter-plot {
     /*background-attachment: fixed;*/
 }
 
-#yearly-statistics {
+#regional-statistics {
     /*width: 400px;
     height: 300px;*/
-    /*float: left;*/
+    float: left;
 }
 
 svg {

@@ -323,7 +323,7 @@ function updateTotal(bcConfig, records, fromYear, toYear, fromMagnitude, toMagni
     else if (bcConfig.id === "#regional-statistics")
         updateLocationOccur(bcConfig, bcConfig.filteredData);
 
-    updatePieChart(getMagnitudeOccurStatistics(filtered));
+    updatePieChart(getMagnitudeOccurStatistics(bcConfig.filteredData));
 }
 
 function chartTransition(bcConfig) {

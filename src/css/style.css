@@ -49,8 +49,9 @@ p.chart-title {
     float: top;
 }
 
-p#epicenter-map-title {
-    max-height: 25px;
+h2#epicenter-map-title {
+    font-size: 30px;
+    text-align: center;
 }
 
 td.chart-background {

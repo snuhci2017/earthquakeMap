@@ -185,7 +185,7 @@ function updateEpicenterMap(records) {
                 "위치: " + d.latitude.value.toFixed(3) + d.latitude.direction + ", " +
                 d.longitude.value.toFixed(3) + d.longitude.direction + " 규모: " + d.magnitude);
             tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
-                .style("background-color", "skyblue").style("font-size", "18px");
+                .style("background-color", "skyblue").style("font-size", "24px");
         })
         .on("mouseout", function() {
             tooltip.style("visibility", "hidden");

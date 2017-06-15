@@ -4,6 +4,14 @@ pieConfig['demension'] = { 'width': 350, 'height': 350 };
 pieConfig.demension['radius'] = Math.min(pieConfig.demension.width, pieConfig.demension.height) / 2;
 
 function pieChart(id, statistics) {
+
+    var tooltip = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .text("a simple tooltip");
+
     console.log(statistics);
     var width = 250;
     var height = 250;
@@ -45,7 +53,35 @@ function pieChart(id, statistics) {
     pieConfig.g.append("path")
         .attr("d", pieConfig.arc)
         .each(function(d) { this._current = d; })
-        .attr("fill", function(d) { return pieConfig.colorVec[key2Index(d.data[0])]; });
+        .attr("fill", function(d) { return pieConfig.colorVec[key2Index(d.data[0])]; })
+        .attr("opacity", 0.7)
+        .on('mouseover', function(d, i) {
+            console.log(d.data[0] + ", " + d.data[1]);
+            tooltip.style("visibility", "visible");
+            d3.select(this)
+                .style("opacity", 1);
+            emphasizeRecords(function(rec) {
+                if (d.data[0] === '1-3') {
+                    return (1 <= rec.magnitude && rec.magnitude < 3);
+                } else if (d.data[0] === '3-4') {
+                    return (3 <= rec.magnitude && rec.magnitude < 4);
+                } else if (d.data[0] === '4-5') {
+                    return (4 <= rec.magnitude && rec.magnitude < 5);
+                } else {
+                    return (5 <= rec.magnitude && rec.magnitude <= 6);
+                }
+            });
+        })
+        .on("mousemove", function(d) {
+            tooltip.text(d.data[0] + ", " + d.data[1]);
+            tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
+                .style("background-color", "skyblue").style("font-size", "24px");
+        })
+        .on("mouseout", function() {
+            d3.select(this).style("opacity", 0.7);
+            tooltip.style("visibility", "hidden");
+            emphasizeRecords((rec) => true);
+        });;
 
     // pieConfig.g.append("text")
     //     .attr("transform", function(d) { return "translate(" + pieConfig.label.centroid(d) + ")"; })

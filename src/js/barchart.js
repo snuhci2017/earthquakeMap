@@ -195,7 +195,7 @@ function updateChart(data, bcConfig, emphasize) {
         .on("mousemove", function(d) {
             tooltip.text(d[0] + ", " + d[1]);
             tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
-                .style("background-color", "skyblue").style("font-size", "18px");
+                .style("background-color", "skyblue").style("font-size", "24px");
         })
         .on("mouseout", function() {
             d3.select(this).style("fill", "steelblue");

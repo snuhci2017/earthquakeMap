@@ -4,7 +4,7 @@
 ### Members: 권민혁, 민두기
 ### Live Demo Page: [https://snuhci2017.github.io/earthquakeMap/](https://snuhci2017.github.io/earthquakeMap/ "라이브 데모 링크")
 
-##프로젝트 개요
+## 프로젝트 개요
  지진 발생을 측정하기 시작한 1978년부터 현재까지 한반도 근처에서 지진은 약 1600건 정도 발생했다. 현재 이 관측 데이터를 기상청에서 일반인들이 열람할 수 있도록 제공한다. 그러나 레코드 단위 또는 모든 데이터를 한꺼번에 지도에 출력(아래 지도 참고)하는 기상청의 공유 방식은 일반인들의 데이터에 대한 접근성을 크게 떨어뜨린다. 이는 일반인들이 국내 지진 발생의 추이 변화와 미래에 발생할 지진에 대한 대비에 대한 안목과 인식을 갖지 못하게 한다. 본 프로젝트에서는 일반인들도 쉽게 사용할 수 있는 지진 데이터 시각화 도구를 구현함으로써 사람들의 데이터에 대한 접근성을 향상시키는데 그 목적을 둔다. ![기상청 제공 국내 진앙 분포도](http://www.kma.go.kr/images/weather/earthquake_volcano/img_tidalwave_map_18.jpg ) 
 ## Persona 
 ### Primery Persona

@@ -4,6 +4,14 @@ pieConfig['dimension'] = { 'width': 350, 'height': 350 };
 pieConfig.dimension['radius'] = Math.min(pieConfig.dimension.width, pieConfig.dimension.height) / 2;
 
 function pieChart(id, statistics) {
+
+    var tooltip = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .text("a simple tooltip");
+
     console.log(statistics);
     var width = 250;
     var height = 250;
@@ -13,6 +21,9 @@ function pieChart(id, statistics) {
         .attr("width", pieConfig.dimension.width)
         .attr("height", pieConfig.dimension.height)
         .append("g");
+
+    pieConfig.pie = d3.layout.pie()
+        .value(function(d) { return d[1]; });
 
     pieConfig.svg.append("g")
         .attr("class", "slices");
@@ -42,22 +53,32 @@ function pieChart(id, statistics) {
         return d.data[0];
     };
 
-    var color = d3.scale.category20();
+    var color = d3.scale.ordinal()
+        .domain(["1-3", "3-4", "4-5", "5-6", "adipisicing", "elit", "sed", "do", "eiusmod", "tempor", "incididunt"])
+        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
 
     function change(data) {
+        var tooltip = d3.select("body")
+            .append("div")
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .text("a simple tooltip");
+
         /* ------- PIE SLICES -------*/
         var slice = pieConfig.svg.select(".slices").selectAll("path.slice")
             .data(pie(data), key);
 
         slice.enter()
             .insert("path")
-            .style("fill", function(d, i) {
-                return color(i);
+            .style("fill", function(d) {
+                return color(d.data[0]);
             })
             .attr("class", "slice");
 
         slice
-            .transition().duration(1000)
+            .transition().duration(500)
             .attrTween("d", function(d) {
                 this._current = this._current || d;
                 var interpolate = d3.interpolate(this._current, d);
@@ -65,6 +86,23 @@ function pieChart(id, statistics) {
                 return function(t) {
                     return arc(interpolate(t));
                 };
+            });
+
+        slice.on('mouseover', function(d, i) {
+            console.log(d.data[0] + ", " + d.data[1]);
+            tooltip.style("visibility", "visible");
+            d3.select(this).style("opacity", 0.5);
+            emphasizeRecords((rec) => getRange(rec.magnitude) === d.data[0]);
+        })
+            .on("mousemove", function(d) {
+                tooltip.text(d.data[0] + ", " + d.data[1]);
+                tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
+                    .style("background-color", "skyblue").style("font-size", "24px");
+            })
+            .on("mouseout", function() {
+                d3.select(this).style("opacity", 1);
+                tooltip.style("visibility", "hidden");
+                emphasizeRecords((rec) => true);
             });
 
         slice.exit()
@@ -86,7 +124,7 @@ function pieChart(id, statistics) {
             return d.startAngle + (d.endAngle - d.startAngle)/2;
         }
 
-        text.transition().duration(1000)
+        text.transition().duration(500)
             .attrTween("transform", function(d) {
                 this._current = this._current || d;
                 var interpolate = d3.interpolate(this._current, d);
@@ -119,7 +157,7 @@ function pieChart(id, statistics) {
         polyline.enter()
             .append("polyline");
 
-        polyline.transition().duration(1000)
+        polyline.transition().duration(500)
             .attrTween("points", function(d){
                 this._current = this._current || d;
                 var interpolate = d3.interpolate(this._current, d);
@@ -140,4 +178,52 @@ function pieChart(id, statistics) {
     change(statistics);
 
     return change;
+
+    // pieConfig.arc = d3.svg.arc()
+    //     .outerRadius(pieConfig.demension.radius - 10)
+    //     .innerRadius(0);
+    //
+    // pieConfig.label = d3.svg.arc()
+    //     .outerRadius(pieConfig.demension.radius - 40)
+    //     .innerRadius(pieConfig.demension.radius - 40);
+    //
+    // pieConfig.g = pieConfig.svg.selectAll("arc")
+    //     .data(function() {
+    //         return pieConfig.pie(statistics);
+    //     }).enter().append("g")
+    //     .attr("class", "arc");
+    //
+    // pieConfig.g.append("path")
+    //     .attr("d", pieConfig.arc)
+    //     .each(function(d) { this._current = d; })
+    //     .attr("fill", function(d) { return pieConfig.colorVec[key2Index(d.data[0])]; })
+    //     .attr("opacity", 0.7)
+    //     .on('mouseover', function(d, i) {
+    //         console.log(d.data[0] + ", " + d.data[1]);
+    //         tooltip.style("visibility", "visible");
+    //         d3.select(this)
+    //             .style("opacity", 1);
+    //         emphasizeRecords(function(rec) {
+    //             if (d.data[0] === '1-3') {
+    //                 return (1 <= rec.magnitude && rec.magnitude < 3);
+    //             } else if (d.data[0] === '3-4') {
+    //                 return (3 <= rec.magnitude && rec.magnitude < 4);
+    //             } else if (d.data[0] === '4-5') {
+    //                 return (4 <= rec.magnitude && rec.magnitude < 5);
+    //             } else {
+    //                 return (5 <= rec.magnitude && rec.magnitude <= 6);
+    //             }
+    //         });
+    //     })
+    //     .on("mousemove", function(d) {
+    //         tooltip.text(d.data[0] + ", " + d.data[1]);
+    //         tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
+    //             .style("background-color", "skyblue").style("font-size", "24px");
+    //     })
+    //     .on("mouseout", function() {
+    //         d3.select(this).style("opacity", 0.7);
+    //         tooltip.style("visibility", "hidden");
+    //         emphasizeRecords((rec) => true);
+    //     });;
+
 }

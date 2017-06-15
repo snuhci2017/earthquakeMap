@@ -148,7 +148,7 @@ function updateEpicenterMap(records) {
         .style("visibility", "hidden")
         .text("a simple tooltip");
 
-    circles.exit().transition().duration(200)
+    circles.exit().transition().duration(400)
         .attr('r', (d) => 0)
         .attr('cx', (d) => (emConfig.plot.width + emConfig.margin.left) / 2)
         .attr('cy', (d) => (emConfig.plot.height + emConfig.margin.bottom) / 2)
@@ -185,11 +185,11 @@ function updateEpicenterMap(records) {
                 "위치: " + d.latitude.value.toFixed(3) + d.latitude.direction + ", " +
                 d.longitude.value.toFixed(3) + d.longitude.direction + " 규모: " + d.magnitude);
             tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
-                .style("background-color", "skyblue").style("font-size", "18px");
+                .style("background-color", "skyblue").style("font-size", "24px");
         })
         .on("mouseout", function() {
             tooltip.style("visibility", "hidden");
-        }).transition().duration(200)
+        }).transition().duration(400)
         .attr('r', (d) => emConfig.radiusRule(d.magnitude))
         .attr('cx', (d) => emConfig.x(d.longitude.value))
         .attr('cy', (d) => emConfig.y(d.latitude.value))

@@ -165,7 +165,7 @@ function updateChart(data, bcConfig, emphasize) {
     var bars = bcConfig.svg.selectAll("rect").data(data, (d) => d[0]);
 
     bcConfig.svg.select(".x.axis") // update the X axis
-        .transition().duration(200)
+        .transition().duration(400)
         .call(bcConfig.axis_x)
         .selectAll('text')
         .style('text-anchor', 'end')
@@ -174,7 +174,7 @@ function updateChart(data, bcConfig, emphasize) {
         .attr('transform', 'rotate(-90)');
 
     bcConfig.svg.select(".y.axis") // update the Y axis
-        .transition().duration(200)
+        .transition().duration(400)
         .call(bcConfig.axis_y);
 
     // update bars in the chart.
@@ -195,7 +195,7 @@ function updateChart(data, bcConfig, emphasize) {
         .on("mousemove", function(d) {
             tooltip.text(d[0] + ", " + d[1]);
             tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
-                .style("background-color", "skyblue").style("font-size", "18px");
+                .style("background-color", "skyblue").style("font-size", "24px");
         })
         .on("mouseout", function() {
             d3.select(this).style("fill", "steelblue");
@@ -203,7 +203,7 @@ function updateChart(data, bcConfig, emphasize) {
             emphasizeRecords((rec) => true);
         });
 
-    bars.transition().duration(200)
+    bars.transition().duration(400)
         .attr('x', (d) => bcConfig.x(d[0]))
         .attr('width', bcConfig.x.rangeBand())
         .attr('y', (d) => bcConfig.y(d[1]))

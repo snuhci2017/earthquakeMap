@@ -115,3 +115,14 @@ svg {
 .arc path {
     stroke: #fff;
 }
+
+path.slice{
+    stroke-width:2px;
+}
+
+polyline{
+    opacity: .3;
+    stroke: black;
+    stroke-width: 2px;
+    fill: none;
+}

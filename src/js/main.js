@@ -11,20 +11,19 @@ $(document).ready(function() {
 
     var bcConfigs = [];
     bcConfigs.push(setupBcConfig("#yearly-statistics", "년도", { 'width': 1350, 'height': 350 }));
-    bcConfigs.push(setupBcConfig("#regional-statistics", "지역", { 'width': 950, 'height': 350 }))
+    bcConfigs.push(setupBcConfig("#regional-statistics", "지역", { 'width': 950, 'height': 350 }));
 
     console.log(filtered);
     setupEpicenterMap(bcConfigs, determineColor, determineRadius);
 
-    pieChart("#pie-chart", getMagnitudeOccurStatistics(filtered));
+    bcConfigs[0].change = pieChart("#pie-chart", getMagnitudeOccurStatistics(filtered));
+    bcConfigs[1].change = bcConfigs[0].change;
 
     bcConfigs.forEach((config) => {
         setupBarChart(config);
         updateTotal(config, filtered, crtFromYear, crtToYear,
             crtFromMagnitude, crtToMagnitude);
     });
-
-
 
     // slider 가 변경 될시 update function 을 부른다
     d3.select('#year-slider').call(

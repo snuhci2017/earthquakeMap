@@ -180,6 +180,8 @@ function updateChart(data, bcConfig, emphasize) {
     // update bars in the chart.
     bars.exit().remove();
 
+    var oldData = bcConfig.filteredData;
+
     bars.enter()
         .append('rect')
         .attr('x', (d) => bcConfig.x(d[0]))
@@ -191,6 +193,8 @@ function updateChart(data, bcConfig, emphasize) {
             d3.select(this)
                 .style("fill", "red");
             emphasizeRecords((rec) => emphasize(rec, d));
+            var newData = oldData.filter((rec) => emphasize(rec, d));
+            updateChartFromBrush(bcConfig.other, newData);
         })
         .on("mousemove", function(d) {
             tooltip.text(d[0] + ", " + d[1]);
@@ -201,6 +205,7 @@ function updateChart(data, bcConfig, emphasize) {
             d3.select(this).style("fill", "steelblue");
             tooltip.style("visibility", "hidden");
             emphasizeRecords((rec) => true);
+            updateChartFromBrush(bcConfig.other, oldData);
         });
 
     bars.transition().duration(400)

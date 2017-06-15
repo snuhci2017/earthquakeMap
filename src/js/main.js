@@ -16,6 +16,8 @@ $(document).ready(function() {
     console.log(filtered);
     setupEpicenterMap(bcConfigs, determineColor, determineRadius);
 
+    bcConfigs[0].other = bcConfigs[1];
+    bcConfigs[1].other = bcConfigs[0];
     bcConfigs[0].change = pieChart("#pie-chart", getMagnitudeOccurStatistics(filtered));
     bcConfigs[1].change = bcConfigs[0].change;
 

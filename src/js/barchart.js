@@ -16,7 +16,7 @@ function setupBcConfig(id, label_x, frame) {
     bcConfig['id'] = id;
     bcConfig['label_x'] = label_x;
     bcConfig['frame'] = { width: frame.width, height: frame.height }; // The size of the frame in HTML doc.
-    bcConfig['margin'] = { top: 20, right: 20, bottom: 80, left: 50 };
+    bcConfig['margin'] = { top: 20, right: 20, bottom: 80, left: 70 };
     bcConfig['chart'] = {
         width: bcConfig.frame.width - bcConfig.margin.left - bcConfig.margin.right,
         height: bcConfig.frame.height - bcConfig.margin.top - bcConfig.margin.bottom

@@ -148,7 +148,7 @@ function updateEpicenterMap(records) {
         .style("visibility", "hidden")
         .text("a simple tooltip");
 
-    circles.exit().transition().duration(200)
+    circles.exit().transition().duration(400)
         .attr('r', (d) => 0)
         .attr('cx', (d) => (emConfig.plot.width + emConfig.margin.left) / 2)
         .attr('cy', (d) => (emConfig.plot.height + emConfig.margin.bottom) / 2)
@@ -189,7 +189,7 @@ function updateEpicenterMap(records) {
         })
         .on("mouseout", function() {
             tooltip.style("visibility", "hidden");
-        }).transition().duration(200)
+        }).transition().duration(400)
         .attr('r', (d) => emConfig.radiusRule(d.magnitude))
         .attr('cx', (d) => emConfig.x(d.longitude.value))
         .attr('cy', (d) => emConfig.y(d.latitude.value))

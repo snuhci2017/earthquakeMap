@@ -55,7 +55,8 @@ h2#epicenter-map-title {
 }
 
 td.chart-background {
-    background-color: #f2f0f7;
+    /*background-color: #f2f0f7;*/
+    background-color: white;
 }
 
 div.chart {
@@ -116,11 +117,11 @@ svg {
     stroke: #fff;
 }
 
-path.slice{
-    stroke-width:2px;
+path.slice {
+    stroke-width: 2px;
 }
 
-polyline{
+polyline {
     opacity: .3;
     stroke: black;
     stroke-width: 2px;

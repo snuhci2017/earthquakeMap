@@ -97,11 +97,11 @@ function pieChart(id, statistics) {
             });
 
         slice.on('mouseover', function(d, i) {
-            console.log(d.data[0] + ", " + d.data[1]);
-            tooltip.style("visibility", "visible");
-            d3.select(this).style("opacity", 0.5);
-            emphasizeRecords((rec) => getRange(rec.magnitude) === d.data[0]);
-        })
+                console.log(d.data[0] + ", " + d.data[1]);
+                tooltip.style("visibility", "visible");
+                d3.select(this).style("opacity", 0.5);
+                emphasizeRecords((rec) => getRange(rec.magnitude) === d.data[0]);
+            })
             .on("mousemove", function(d) {
                 tooltip.text(d.data[0] + ", " + d.data[1]);
                 tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
@@ -124,12 +124,13 @@ function pieChart(id, statistics) {
         text.enter()
             .append("text")
             .attr("dy", ".35em")
+            .attr("font-size", "17px")
             .text(function(d) {
                 return d.data[0];
             });
 
-        function midAngle(d){
-            return d.startAngle + (d.endAngle - d.startAngle)/2;
+        function midAngle(d) {
+            return d.startAngle + (d.endAngle - d.startAngle) / 2;
         }
 
         text.transition().duration(500)
@@ -141,16 +142,16 @@ function pieChart(id, statistics) {
                     var d2 = interpolate(t);
                     var pos = outerArc.centroid(d2);
                     pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
-                    return "translate("+ pos +")";
+                    return "translate(" + pos + ")";
                 };
             })
-            .styleTween("text-anchor", function(d){
+            .styleTween("text-anchor", function(d) {
                 this._current = this._current || d;
                 var interpolate = d3.interpolate(this._current, d);
                 this._current = interpolate(0);
                 return function(t) {
                     var d2 = interpolate(t);
-                    return midAngle(d2) < Math.PI ? "start":"end";
+                    return midAngle(d2) < Math.PI ? "start" : "end";
                 };
             });
 
@@ -166,7 +167,7 @@ function pieChart(id, statistics) {
             .append("polyline");
 
         polyline.transition().duration(500)
-            .attrTween("points", function(d){
+            .attrTween("points", function(d) {
                 this._current = this._current || d;
                 var interpolate = d3.interpolate(this._current, d);
                 var _this = this;

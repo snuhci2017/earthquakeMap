@@ -1,7 +1,7 @@
 body {
     width: 100%;
     font-family: helvetica;
-    background-color: #FFFFF0;
+    background-color: white;
 }
 
 p#main-title {
@@ -61,7 +61,7 @@ td.chart-background {
 
 div.chart {
     margin: 0px 10px 10px 10px;
-    background: linear-gradient(to bottom right, white, #F0FFF0);
+    /*background: linear-gradient(to bottom right, white, #F0FFF0);*/
 }
 
 div#epicenter-plot {

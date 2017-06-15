@@ -11,7 +11,7 @@
 <body>
     <header style="height: 100%; width: 100%;">
         <p id="main-title">
-            Korean Earthquakes
+            한국 지진 데이터 시각화
         </p>
     </header>
     <div>
@@ -19,14 +19,18 @@
             <table id="main-interface">
                 <tr>
                     <td class="chart-background" rowspan="3">
-                        <p id="epicenter-map-title" class="chart-title">Epicenter Map</p>
+                        <h2 id="epicenter-map-title" class="chart-title">진앙 분포도</h2>
                         <div id="epicenter-plot" class="chart"></div>
                     </td>
                     <td class="chart-background">
-                        <p class="chart-title" id="bar-chart-title">Statistics by Year/Magnitude/Region</p>
-                        <div id="yearly-statistics" class="chart"></div>
-                        <div id="pie-charts" style="min-height: 50%;">
-                            <p class="chart-title">Pie Charts</p>
+                        <div id="yearly-statistics" class="chart">
+                            <h2>연도별 통계</h2>
+                        </div>
+                        <div id="regional-statistics" class="chart">
+                            <h2>지역별 통계</h2>
+                        </div>
+                        <div id="pie-charts" class="chart" style="min-height: 50%;">
+                            <h2>규모별 통계</h2>
                         </div>
                     </td>
                 </tr>
@@ -41,7 +45,7 @@
                         <table max-height="200px">
                             <tr>
                                 <td>
-                                    <h3 style="padding: 0px 10px; text-align: center;">Range of Year</h3>
+                                    <h3 style="padding: 0px 10px; font-size: 24px; text-align: center;">발생 연도 범위</h3>
                                 </td>
                                 <td>
                                     <div id="year-slider" style="padding: 0px 10px;"></div>
@@ -49,7 +53,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <h3 style="padding: 0px 10px; text-align: center;">Range of Magnitude</h3>
+                                    <h3 style="padding: 0px 10px; font-size: 24px;  text-align: center;">규모 범위</h3>
                                 </td>
                                 <td>
                                     <div id="magnitude-slider" style="padding: 0px 10px;"></div>
@@ -69,6 +73,7 @@
     <script src="../js/common.js" charset="utf-8"></script>
     <script src="../js/scatterplot.js" charset="utf-8"></script>
     <script src="../js/barchart.js" charset="utf-8"></script>
+    <script src="../js/piechart.js" charset="utf-8"></script>
 </body>
 
 </html>

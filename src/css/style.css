@@ -49,12 +49,14 @@ p.chart-title {
     float: top;
 }
 
-p#epicenter-map-title {
-    max-height: 25px;
+h2#epicenter-map-title {
+    font-size: 30px;
+    text-align: center;
 }
 
 td.chart-background {
-    background-color: #f2f0f7;
+    /*background-color: #f2f0f7;*/
+    background-color: white;
 }
 
 div.chart {
@@ -77,10 +79,10 @@ div#epicenter-plot {
     /*background-attachment: fixed;*/
 }
 
-#yearly-statistics {
+#regional-statistics {
     /*width: 400px;
     height: 300px;*/
-    /*float: left;*/
+    float: left;
 }
 
 svg {
@@ -94,10 +96,34 @@ svg {
     shape-rendering: crispEdges;
 }
 
+.axis text {
+    font-size: 16px;
+}
+
 .dot {
     stroke: #000;
 }
 
 .brush rect {
     opacity: 0.2;
+}
+
+.arc text {
+    font: 18px sans-serif;
+    text-anchor: middle;
+}
+
+.arc path {
+    stroke: #fff;
+}
+
+path.slice {
+    stroke-width: 2px;
+}
+
+polyline {
+    opacity: .3;
+    stroke: black;
+    stroke-width: 2px;
+    fill: none;
 }

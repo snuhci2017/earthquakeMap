@@ -31,7 +31,7 @@ $(document).ready(function() {
         d3.slider()
         .axis(true).min(1978).max(2017).step(1)
         .value([crtFromYear, crtToYear])
-        .on("slide", function(evt, value) {
+        .on("slideend", function(evt, value) {
             // 현재 년도를 저장해 놓는다
             crtFromYear = value[0];
             crtToYear = value[1];
@@ -44,7 +44,7 @@ $(document).ready(function() {
         d3.slider()
         .axis(true).min(1).max(6)
         .value([crtFromMagnitude, crtToMagnitude])
-        .on("slide", function(evt, value) {
+        .on("slideend", function(evt, value) {
             // 현재 규모를 저장해 놓는다
             crtFromMagnitude = value[0];
             crtToMagnitude = value[1];

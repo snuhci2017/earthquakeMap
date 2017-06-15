@@ -59,6 +59,14 @@ function pieChart(id, statistics) {
 
 
     function change(data) {
+        if (data.length !== 0) {
+            var temp = data[data.length - 1];
+            for (var a = data.length - 1; a > 0; a--) {
+                data[a] = data[a - 1];
+            }
+            data[0] = temp;
+        }
+
         var tooltip = d3.select("body")
             .append("div")
             .style("position", "absolute")
